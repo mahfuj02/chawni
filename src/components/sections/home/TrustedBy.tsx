@@ -9,7 +9,8 @@ export function TrustedBy({
   testimonial,
   clients,
 }: {
-  testimonial: Testimonial;
+  /** Optional: no real testimonial has been supplied yet. */
+  testimonial?: Testimonial;
   clients: Client[];
 }) {
   const t = useTranslations("trusted");
@@ -25,17 +26,19 @@ export function TrustedBy({
           </h2>
         </div>
 
-        <figure className="flex flex-col gap-8 rounded-card bg-mist p-8 md:p-14">
-          <Quote aria-hidden="true" className="size-12 text-orange" strokeWidth={1.5} />
-          <blockquote className="max-w-4xl font-heading text-[clamp(1.5rem,1.1rem+1.6vw,2.5rem)] leading-snug font-semibold">
-            {pick(testimonial.quote, locale)}
-          </blockquote>
-          <figcaption className="text-muted">
-            <span className="font-semibold text-ink">{pick(testimonial.author, locale)}</span>
-            {", "}
-            {pick(testimonial.role, locale)}, {pick(testimonial.organization, locale)}
-          </figcaption>
-        </figure>
+        {testimonial && (
+          <figure className="flex flex-col gap-8 rounded-card bg-mist p-8 md:p-14">
+            <Quote aria-hidden="true" className="size-12 text-orange" strokeWidth={1.5} />
+            <blockquote className="max-w-4xl font-heading text-[clamp(1.5rem,1.1rem+1.6vw,2.5rem)] leading-snug font-semibold">
+              {pick(testimonial.quote, locale)}
+            </blockquote>
+            <figcaption className="text-muted">
+              <span className="font-semibold text-ink">{pick(testimonial.author, locale)}</span>
+              {", "}
+              {pick(testimonial.role, locale)}, {pick(testimonial.organization, locale)}
+            </figcaption>
+          </figure>
+        )}
 
         <ul
           aria-label={t("logos")}

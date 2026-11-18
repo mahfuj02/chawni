@@ -1,15 +1,10 @@
 import { useLocale, useTranslations } from "next-intl";
-import { PlaceholderImage } from "@/components/ui";
+import { Photo } from "@/components/ui";
 import type { JournalPost } from "@/content/types";
 import { Link } from "@/i18n/navigation";
 import { JOURNAL_CATEGORY_KEY } from "@/lib/filters";
 import { formatDate } from "@/lib/format";
 import { pick } from "@/lib/localized";
-
-/** `cover` is either a path under /public (starts with "/") or a placeholder caption. */
-export function coverProps(cover: string) {
-  return cover.startsWith("/") ? { src: cover, caption: "" } : { src: undefined, caption: cover };
-}
 
 export function PostCard({
   post,
@@ -23,16 +18,15 @@ export function PostCard({
 }) {
   const locale = useLocale();
   const t = useTranslations("journalPage");
-  const cover = coverProps(post.cover);
   const title = pick(post.title, locale);
 
   return (
     <article className="group relative flex flex-col gap-5">
       <div className="overflow-hidden rounded-card">
         <div className="transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]">
-          <PlaceholderImage
-            caption={cover.caption}
-            src={cover.src}
+          <Photo
+            src={post.cover}
+            blur={post.coverBlur}
             aspect={featured ? "16/9" : "3/2"}
             alt={title}
             sizes={

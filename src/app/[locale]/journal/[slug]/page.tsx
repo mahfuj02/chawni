@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { MdxBody } from "@/components/sections/journal/MdxBody";
 import { ShareLinks } from "@/components/sections/journal/ShareLinks";
-import { coverProps, PostCard } from "@/components/sections/PostCard";
-import { Container, PlaceholderImage, SectionLabel } from "@/components/ui";
+import { PostCard } from "@/components/sections/PostCard";
+import { Container, Photo, SectionLabel } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getContentSource } from "@/lib/content-source";
@@ -50,7 +50,6 @@ export default async function JournalPostPage({ params }: PageProps<"/[locale]/j
   const t = await getTranslations("journalPage");
   const tn = await getTranslations("nav");
   const title = pick(post.title, locale);
-  const cover = coverProps(post.cover);
   const url = absoluteUrl(localizedPath(locale, `/journal/${slug}`));
 
   return (
@@ -76,12 +75,12 @@ export default async function JournalPostPage({ params }: PageProps<"/[locale]/j
         </header>
 
         <Container>
-          <PlaceholderImage
-            caption={cover.caption}
-            src={cover.src}
+          <Photo
+            src={post.cover}
+            blur={post.coverBlur}
             aspect="16/9"
             alt={title}
-            sizes="100vw"
+            sizes="(min-width: 1440px) 1296px, 100vw"
             priority
           />
         </Container>

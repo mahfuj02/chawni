@@ -21,8 +21,7 @@
     "home": "Home",
     "next": "Next",
     "previous": "Previous",
-    "loading": "Loading",
-    "dummyNotice": "Sample content"
+    "loading": "Loading"
   },
   "nav": {
     "home": "Home",
@@ -81,11 +80,13 @@
     "label": "our team",
     "heading": "Nine disciplines, one studio.",
     "text": "Architects, engineers, interior designers and site managers working side by side.",
-    "seeAll": "Meet the team"
+    "seeAll": "Meet the team",
+    "coFounder": "Co-founder",
+    "photoSoon": "Photo coming soon"
   },
   "trusted": {
     "label": "trusted by",
-    "heading": "Clients who came back to build again.",
+    "heading": "Trusted by clients across Sylhet.",
     "logos": "Client logos"
   },
   "journalSection": {
@@ -105,20 +106,19 @@
     "follow": "Follow",
     "rights": "All rights reserved.",
     "licences": "Trade licence: {trade} · IEB: {ieb} · IAB: {iab}",
-    "privacy": "Privacy",
-    "madeNote": "Sample website content. Replace before launch."
+    "privacy": "Privacy"
   },
   "about": {
     "title": "About us",
     "label": "about us",
     "heroTitle": "We design and build environments people are glad to live in.",
-    "heroText": "Chawni is an architecture, engineering, interior and construction practice working across Bangladesh.",
+    "heroText": "Chawni is an architecture, engineering, interior and construction practice based in Sylhet, Bangladesh.",
     "photoCaption": "TEAM PHOTO",
-    "photoAlt": "The Chawni team together in the studio (placeholder)",
+    "photoAlt": "The Chawni studio, with its sculpted brick feature wall",
     "storyLabel": "our story",
-    "storyTitle": "Started with one drawing table and a belief in honest buildings.",
-    "storyP1": "Placeholder story. Chawni began as a small studio that wanted architecture and construction to stop blaming each other. Bringing both under one roof meant drawings that could be built and builders who understood the drawings.",
-    "storyP2": "Today the practice spans residential, commercial, hospitality and institutional work. The principle is unchanged: plan carefully, design with care, engineer properly and build as drawn.",
+    "storyTitle": "Architecture, structure and interiors under one roof.",
+    "storyP1": "Chawni is a small studio in Sylhet that designs buildings and the spaces inside them. Our team brings together architects, civil engineers, a graphic designer and a technologist, so a project can be drawn, engineered and built by people who talk to each other.",
+    "storyP2": "Our portfolio runs from family homes and residential buildings to hotels, offices, learning centres and a mosque. The principle is the same each time: plan carefully, design with care, engineer properly and build as drawn.",
     "missionLabel": "mission",
     "missionTitle": "Our mission",
     "missionText": "To deliver well-designed, soundly engineered and honestly built environments, on time and with respect for the people who use them.",
@@ -150,35 +150,36 @@
     "title": "Projects",
     "label": "projects",
     "heroTitle": "Work we are proud of.",
-    "heroText": "Homes, workplaces, interiors and construction projects from across the country.",
+    "heroText": "Homes, hotels, offices, interiors and institutions, mostly in and around Sylhet.",
     "filterLabel": "Filter projects by category",
     "all": "All",
     "residential": "Residential",
     "commercial": "Commercial",
     "interior": "Interior",
-    "construction": "Construction",
     "empty": "No projects in this category yet.",
     "emptyAction": "Show all projects",
-    "count": "{count, plural, one {# project} other {# projects}}"
+    "count": "{count, plural, one {# project} other {# projects}}",
+    "hospitality": "Hospitality",
+    "institutional": "Institutional",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "constructionStarting": "Construction starting",
+      "proposed": "Proposed",
+      "design": "Design"
+    }
   },
   "projectDetail": {
     "back": "All projects",
     "location": "Location",
     "client": "Client",
-    "size": "Size",
     "scope": "Scope",
-    "completed": "Completed",
-    "ongoing": "Ongoing",
-    "sqft": "{value} sq ft",
-    "brief": "The brief",
-    "solution": "Our solution",
     "gallery": "Gallery",
     "photoCounter": "{current} / {total}",
     "openPhoto": "Open photo {number} of {total}",
     "closeLightbox": "Close gallery",
     "prevPhoto": "Previous photo",
     "nextPhoto": "Next photo",
-    "quote": "Client quote",
     "nextProject": "Next project",
     "explore": {
       "label": "explore in 3d",
@@ -189,10 +190,16 @@
       "photos": "Show photos",
       "load": "Load 3D view",
       "loading": "Loading 3D model",
-      "demoNote": "Demo model. The real 3D model of this project will replace it.",
       "viewerLabel": "Interactive 3D model of this project",
-      "hotspot": "Open photo: {name}"
-    }
+      "hotspot": "{label} — open photo {n}",
+      "massingNote": "Massing model built from the project renders, not an exact survey."
+    },
+    "area": "Area",
+    "year": "Year",
+    "status": "Status",
+    "about": "About this project",
+    "englishOnly": "Project descriptions are currently available in English only.",
+    "photoCredit": "Photography: {name}"
   },
   "journalPage": {
     "title": "Journal",
@@ -232,7 +239,7 @@
     "whatsappText": "Send us a message and a photo of your plot.",
     "whatsappButton": "Chat on WhatsApp",
     "mapTitle": "Find us",
-    "mapAlt": "Map showing the Chawni office location (placeholder)",
+    "mapAlt": "Map showing the Chawni office location (placeholder until the address is confirmed)",
     "mapNote": "Map will be shown here once the office address is confirmed.",
     "form": {
       "title": "Send an inquiry",
@@ -276,7 +283,7 @@
   "privacy": {
     "title": "Privacy",
     "heading": "Privacy policy",
-    "updated": "Placeholder text. Final policy to be provided by Chawni.",
+    "updated": "Draft text. The final policy will be provided by Chawni.",
     "collectTitle": "What we collect",
     "collectText": "When you send an inquiry we receive your name, phone, email and message. We use them only to reply to you.",
     "shareTitle": "Who sees it",

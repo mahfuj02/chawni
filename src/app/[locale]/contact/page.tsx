@@ -1,10 +1,10 @@
-import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHero } from "@/components/sections/PageHero";
 import { Button, Container, PlaceholderImage } from "@/components/ui";
-import { company, whatsappUrl } from "@/content";
+import { company, telHref, whatsappUrl } from "@/content";
 import { pick } from "@/lib/localized";
 import { pageMetadata } from "@/lib/seo";
 
@@ -30,15 +30,21 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
   const tc = await getTranslations("common");
 
   const details = [
-    { Icon: MapPin, label: t("address"), value: pick(company.address, locale) },
-    { Icon: Clock, label: t("hours"), value: pick(company.hours, locale) },
+    {
+      Icon: MapPin,
+      label: t("address"),
+      lines: [{ text: pick(company.address, locale) }] as { text: string; href?: string }[],
+    },
     {
       Icon: Phone,
       label: t("phone"),
-      value: company.phone,
-      href: `tel:${company.phone.replace(/[^+\d]/g, "")}`,
+      lines: company.phones.map((p) => ({ text: p, href: telHref(p) })),
     },
-    { Icon: Mail, label: t("email"), value: company.email, href: `mailto:${company.email}` },
+    {
+      Icon: Mail,
+      label: t("email"),
+      lines: [{ text: company.email, href: `mailto:${company.email}` }],
+    },
   ];
 
   return (
@@ -57,7 +63,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
             <div className="flex flex-col gap-6">
               <h2 className="text-h3">{t("officeTitle")}</h2>
               <ul className="flex flex-col gap-6">
-                {details.map(({ Icon, label, value, href }) => (
+                {details.map(({ Icon, label, lines }) => (
                   <li key={label} className="flex items-start gap-4">
                     <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-orange text-ink">
                       <Icon aria-hidden="true" className="size-5" />
@@ -66,13 +72,19 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
                       <dt className="text-label font-medium tracking-wide text-muted uppercase">
                         {label}
                       </dt>
-                      <dd className="mt-0.5">
-                        {href ? (
-                          <a href={href} className="underline-offset-4 hover:underline">
-                            {value}
-                          </a>
-                        ) : (
-                          value
+                      <dd className="mt-0.5 flex flex-col">
+                        {lines.map((line) =>
+                          line.href ? (
+                            <a
+                              key={line.text}
+                              href={line.href}
+                              className="inline-flex min-h-8 items-center underline-offset-4 hover:underline"
+                            >
+                              {line.text}
+                            </a>
+                          ) : (
+                            <span key={line.text}>{line.text}</span>
+                          ),
                         )}
                       </dd>
                     </dl>
