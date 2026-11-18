@@ -38,7 +38,7 @@ Pages call `getContentSource()` (`src/lib/content-source.ts`), which returns a `
 
 ## 3D loading strategy
 
-Scenes live in `components/three`. Wrappers use `next/dynamic({ ssr: false })` and mount only when near the
+The procedural "what we do" building is gone (v0.4.0); the only scene left in `components/three` is the project GLB viewer. Scenes live there. Wrappers use `next/dynamic({ ssr: false })` and mount only when near the
 viewport (IntersectionObserver). A static fallback renders for reduced motion, no WebGL, or low-power devices
 (`hardwareConcurrency <= 4`, Save-Data). DPR is capped at 1.75, rendering pauses off-screen, and geometries
 and materials are disposed on unmount. three.js never enters the shared chunk.
@@ -72,3 +72,20 @@ Source of truth: `src/content/hero.ts`; code in `src/components/sections/hero/`.
   still change by hand, instantly, with no Ken Burns or parallax).
 - **Header.** On Home the header is fixed and transparent (light logo, white links) and becomes the normal white header
   after 80% of the hero has scrolled past. Other pages keep the sticky white header.
+
+## Logo intro (v0.4.0)
+
+`components/intro/`: `Intro.tsx` (server), `LogoIntro.tsx` (client), `logo-intro-scene.ts` (three.js, a port of the approved `intro.js`), rules in `lib/intro-gate.ts`.
+
+- **Gating.** Home only, first visit per session (`sessionStorage` key `chawni-intro`, try/catch). Skipped for reduced motion, `navigator.webdriver`, Save-Data, bots and Lighthouse user agents, and when WebGL is missing. One pure function, `shouldPlayIntro`, holds the rule (unit-tested). A ~400-byte inline script runs the same checks before first paint and sets `<html data-intro="playing">`.
+- **No flash, no LCP cost.** The server renders the overlay as a plain dark div that CSS only shows under that attribute. The hero (and its LCP `next/image`) renders underneath from the start.
+- **Chunking.** three.js and the scene are a dynamic `import()` inside `LogoIntro`, so they never enter the Home first-load JS (checked: no three.js code is fetched when the intro is skipped). If the chunk has not arrived after 1.2 s the intro is skipped. Everything (geometry, materials, renderer, listeners) is disposed when it ends or the component unmounts.
+- **Hand-off.** While the attribute is set, CSS pauses the hero's entrance animations and scales the hero from 1.08 to 1 (`--reveal-scale`), and `HeroSlideshow` holds its clock and the WebGL start. When the intro ends (or "Skip intro", Esc, Enter or Space is used) the attribute is removed, so the headline animates in right after the reveal. Focus moves to `#main` if it was on the skip button.
+
+## What we do sequence (v0.4.0)
+
+`WhatWeDo.tsx` (chips, phases, pinning) and `WhatWeDoStage.tsx` (the four frames). Data: `content/what-we-do.ts`; the plan drawing is inlined from `public/what-we-do/plan.svg` as `content/plan-markup.ts`.
+
+- A 4:3 frame is pinned with CSS `position: sticky` while the phases scroll; an IntersectionObserver sets the active phase and the chips mirror it (`aria-current="step"`; clicking a chip scrolls to the phase with Lenis).
+- Each frame animates with CSS transitions toggled by classes: plan (stroke-dash draw of walls, openings and glazing; fades for grid, columns and dimensions), design (clip-path wipe plus slow zoom), engineer (image dims to 55% and an orange dashed grid draws), build (cross-fade and a sliding badge). Frames covered by a later one are hidden after the cross-fade.
+- Phones and reduced motion: nothing is pinned or animated; `StaticFrame` shows each phase's frame in its final state under its text.
