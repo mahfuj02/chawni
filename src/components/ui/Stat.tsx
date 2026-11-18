@@ -55,10 +55,12 @@ export function Stat({
 
   return (
     <div ref={ref} className={cn("flex flex-col gap-2", className)}>
-      <p
-        className="font-heading text-[clamp(2.5rem,1.8rem+2.6vw,4rem)] leading-none font-semibold tracking-tight tabular-nums"
-        aria-label={`${value.toFixed(decimals)}${suffix} ${label}`}
-      >
+      <p className="font-heading text-[clamp(2.5rem,1.8rem+2.6vw,4rem)] leading-none font-semibold tracking-tight tabular-nums">
+        {/* Screen readers get the final value; the animated digits are decorative. */}
+        <span className="sr-only">
+          {value.toFixed(decimals)}
+          {suffix}
+        </span>
         <span aria-hidden="true">
           {shown.toFixed(decimals)}
           <span className="text-orange">{suffix}</span>

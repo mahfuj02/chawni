@@ -29,20 +29,20 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
         href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={t("shareFacebook")}
       >
         <Share2 aria-hidden="true" className="size-4" />
         Facebook
+        <span className="sr-only">: {t("shareFacebook")}</span>
       </a>
       <a
         className={btn}
         href={`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={t("shareWhatsapp")}
       >
         <MessageCircle aria-hidden="true" className="size-4" />
         WhatsApp
+        <span className="sr-only">: {t("shareWhatsapp")}</span>
       </a>
       <button type="button" className={btn} onClick={copy}>
         {copied ? (

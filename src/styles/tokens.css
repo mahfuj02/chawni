@@ -5,7 +5,7 @@
  */
 @theme {
   --color-orange: #f47c24; /* fixed brand accent. Never body text */
-  --color-orange-text: #c2560e; /* small orange labels on white (passes contrast) */
+  --color-orange-text: #b8510c; /* small orange labels; AA on white (5.1:1) and mist (4.6:1) */
   --color-ink: #141414;
   --color-white: #ffffff;
   --color-sky: #aecbe8;

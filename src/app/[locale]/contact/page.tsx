@@ -50,13 +50,13 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-6">
               <h2 className="text-h3">{t("officeTitle")}</h2>
-              <dl className="flex flex-col gap-6">
+              <ul className="flex flex-col gap-6">
                 {details.map(({ Icon, label, value, href }) => (
-                  <div key={label} className="flex items-start gap-4">
+                  <li key={label} className="flex items-start gap-4">
                     <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-orange text-ink">
                       <Icon aria-hidden="true" className="size-5" />
                     </span>
-                    <div>
+                    <dl>
                       <dt className="text-label font-medium tracking-wide text-muted uppercase">
                         {label}
                       </dt>
@@ -69,10 +69,10 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
                           value
                         )}
                       </dd>
-                    </div>
-                  </div>
+                    </dl>
+                  </li>
                 ))}
-              </dl>
+              </ul>
             </div>
 
             <div className="flex flex-col items-start gap-4 rounded-card bg-mist p-6 md:p-8">
