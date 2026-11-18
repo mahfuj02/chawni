@@ -35,12 +35,19 @@
     "mobile": "Mobile menu"
   },
   "hero": {
-    "titleBefore": "For an environment",
-    "titleHighlight": "to live.",
-    "description": "Architecture, engineering, interiors and construction under one roof, from first sketch to final handover.",
+    "description": "Homes, hotels, schools and workplaces — planned, designed, engineered and built by one team in Sylhet.",
     "ctaProjects": "View our projects",
     "ctaWho": "Who we are",
-    "sceneLabel": "Interactive 3D model: the Chawni logo rising into an architectural model"
+    "eyebrow": "ARCHITECTURE · ENGINEERING · INTERIOR · CONSTRUCTION",
+    "title1": "For an",
+    "title2": "environment",
+    "title3": "to live.",
+    "imageAlt": "{title} by Chawni Architectures",
+    "choose": "Choose a project",
+    "show": "Show {title}",
+    "pause": "Pause",
+    "play": "Play",
+    "scroll": "SCROLL ↓"
   },
   "who": {
     "label": "who we are",

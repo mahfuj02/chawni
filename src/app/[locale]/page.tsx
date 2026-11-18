@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { FeaturedProjects } from "@/components/sections/home/FeaturedProjects";
-import { Hero } from "@/components/sections/home/Hero";
+import { Hero } from "@/components/sections/hero/Hero";
 import { JournalPreview } from "@/components/sections/home/JournalPreview";
 import { TeamSection } from "@/components/sections/home/TeamSection";
 import { TrustedBy } from "@/components/sections/home/TrustedBy";
@@ -53,7 +53,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       <JsonLd data={organizationJsonLd(locale)} />
-      <Hero />
+      <Hero locale={locale} />
       <WhoWeAre stats={stats} />
       <WhatWeDo phases={phases} />
       <WhyChawni />

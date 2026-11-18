@@ -4,7 +4,7 @@ import { Html, OrbitControls, useGLTF, useProgress } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Component, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
-import { BRAND } from "./mark-lines";
+import { BRAND } from "./brand";
 
 // Draco decoders are self-hosted (public/draco) so models load without a third-party CDN.
 useGLTF.setDecoderPath("/draco/");
