@@ -86,7 +86,11 @@ export function Gallery({ images, openIndex, onOpenChange }: GalleryProps) {
 
             <div className="flex min-h-0 flex-1 items-center justify-center">
               {current && (
-                <div className="w-full max-w-6xl">
+                // Width is also capped by the available height, so the photo never covers the controls.
+                <div
+                  className="w-full max-w-6xl"
+                  style={{ width: "min(100%, calc((100dvh - 13rem) * 16 / 9))" }}
+                >
                   <PlaceholderImage
                     caption={current.caption}
                     aspect="16/9"
