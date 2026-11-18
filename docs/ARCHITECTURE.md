@@ -48,3 +48,27 @@ and materials are disposed on unmount. three.js never enters the shared chunk.
 Static generation, `next/font` self-hosting, `next/image` (AVIF/WebP, `sizes`, hero-only priority), minimal
 client JS for non-3D pages (< 200 KB gz), lazy 3D, animations opt-out under `prefers-reduced-motion`.
 Verify with `pnpm analyze` and Lighthouse mobile.
+
+## Home hero (v0.3.0)
+
+A full-screen slideshow of four real projects with a depth-parallax "living photo" effect.
+Source of truth: `src/content/hero.ts`; code in `src/components/sections/hero/`.
+
+- **Static LCP layer (server).** `Hero.tsx` renders slide 1 as a `priority` `next/image` (`fill`, `sizes="100vw"`, blur
+  placeholder, `object-position` from the slide's focus values via CSS variables), the shade gradients, the copy and
+  the buttons. It works without JavaScript and is the LCP element. The layer is 2 px shorter than the viewport on
+  purpose: Chrome never counts a full-viewport image as an LCP candidate (it treats it as a background).
+- **Controls (client).** `HeroSlideshow.tsx` owns the slide index, the 7 s clock (time only counts while running, so
+  pausing keeps the remaining time), pause on hover and focus, a visible Pause/Play button, the progress-bar buttons,
+  arrow-key navigation and the `aria-live` caption. Captions are looked up from the project (`lib/hero-caption.ts`).
+- **Depth layer (WebGL).** `hero-gl.ts` is a ~2 KB plain WebGL 1 fullscreen-quad renderer, a direct port of the approved
+  prototype's shader: cover-fit with focus and zoom, depth displacement from the pointer (slow drift on touch) and scroll,
+  a 1.6 s crossfade and a Ken Burns zoom. `HeroGL.tsx` mounts it via `next/dynamic` (`ssr: false`) on the first
+  interaction or after 4 s, scheduled with `requestIdleCallback`. Slide 1's textures load first; only then does the canvas
+  fade in over the static image. The other slides load in the background. It uses the 1280 px textures on narrow screens,
+  Save-Data and 2g/3g.
+- **Safety.** The render loop pauses when the hero is off screen or the tab is hidden; textures are released on unmount;
+  `webglcontextlost` or missing WebGL falls back to the static image; reduced motion never mounts the canvas (slides
+  still change by hand, instantly, with no Ken Burns or parallax).
+- **Header.** On Home the header is fixed and transparent (light logo, white links) and becomes the normal white header
+  after 80% of the hero has scrolled past. Other pages keep the sticky white header.

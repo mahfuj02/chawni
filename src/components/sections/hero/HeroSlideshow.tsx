@@ -134,19 +134,46 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
     };
   }, []);
 
-  // Mount the WebGL layer once the browser is idle (never for reduced motion).
+  // Mount the WebGL layer when the browser is idle, but only once the page has settled: on the first
+  // interaction, or after 4 s, whichever comes first. This keeps texture decoding and shader compilation
+  // out of the start-up window (TBT) without making real visitors wait for the effect. Never for reduced motion.
   useEffect(() => {
     if (reduce) return;
     const w = window as Window & {
       requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
     };
-    if (w.requestIdleCallback) {
-      const id = w.requestIdleCallback(() => setMountGL(true), { timeout: 2000 });
-      return () => w.cancelIdleCallback?.(id);
+    const events = [
+      "pointerdown",
+      "pointermove",
+      "wheel",
+      "keydown",
+      "touchstart",
+      "scroll",
+    ] as const;
+    let idle = 0;
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      cleanupListeners();
+      if (w.requestIdleCallback)
+        idle = w.requestIdleCallback(() => setMountGL(true), { timeout: 1000 });
+      else idle = window.setTimeout(() => setMountGL(true), 1000);
+    };
+    const timer = window.setTimeout(start, 4000);
+    function cleanupListeners() {
+      events.forEach((e) => window.removeEventListener(e, start));
     }
-    const id = window.setTimeout(() => setMountGL(true), 1000);
-    return () => window.clearTimeout(id);
+    events.forEach((e) => window.addEventListener(e, start, { passive: true, once: true }));
+    return () => {
+      window.clearTimeout(timer);
+      cleanupListeners();
+      if (idle) {
+        if (w.cancelIdleCallback) w.cancelIdleCallback(idle);
+        else window.clearTimeout(idle);
+      }
+    };
   }, [reduce]);
 
   const onDotKey = (e: KeyboardEvent) => {
@@ -175,7 +202,7 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
       {/* Static layer: always works, and is the LCP element. Hidden once the canvas has faded in. */}
       <div
         className={cn(
-          "absolute inset-0 -z-20 transition-[visibility] delay-[900ms] duration-0",
+          "absolute inset-x-0 top-0 bottom-[2px] -z-20 transition-[visibility] delay-[900ms] duration-0",
           glReady && showGL && "invisible",
         )}
       >

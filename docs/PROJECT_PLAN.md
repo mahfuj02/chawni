@@ -31,7 +31,7 @@ clients; prospective hires and partners. Many visit on mobile over modest connec
 
 ## Page sections
 
-- **Home:** hero + 3D logo · who we are + stats · what we do + 3D phase model · why chawni · featured projects · team · trusted by · journal · CTA.
+- **Home:** full-screen project slideshow hero · who we are + stats · what we do + 3D phase model · why chawni · featured projects · team · trusted by · journal · CTA.
 - **About:** hero statement · team photo · story · mission/vision · leadership · registrations · CTA.
 - **Services:** hero · 4 phase blocks · sectors · CTA.
 - **Projects:** hero · category filter · grid · empty state.

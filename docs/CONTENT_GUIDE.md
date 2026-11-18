@@ -113,3 +113,23 @@ are English and shared by both languages. Run `pnpm content:blur` if the cover i
 Edit `messages/bn.json` alongside `messages/en.json` (a unit test fails if their keys differ). Project text
 (summary, scope, location) is currently English only; Bangla pages show it with a short note. Add a `titleBn` to
 give a project a Bangla title.
+
+## Home hero slides
+
+The four hero slides are listed in `src/content/hero.ts`; assets are in `public/hero/`. Captions (title, location, scope,
+status) come from the project, so set `projectSlug` to an existing project.
+
+To add or replace a slide:
+
+1. **Image.** A 16:9 photo at **2400×1350** (`<id>.jpg`) plus a **1280×720** copy (`<id>-1280.jpg`) for phones and slow
+   connections.
+2. **Depth map** (`<id>-depth.png`). This is an **offline step**: generate it with any monocular depth model (for example
+   Depth Anything V2 small), normalise it to 0–255 with **white = near, black = far**, blur it with a **2–3 px** radius, and
+   save it as a **1200×675** greyscale PNG.
+3. **Data.** Add a `slide(id, projectSlug, focusX, focusXMobile, focusY, zoom)` line:
+   - `focusX` / `focusXMobile`: horizontal focus 0–1 on landscape / portrait screens (0 = left edge, 1 = right edge)
+   - `focusY`: vertical focus 0–1, `zoom`: 1.0–1.06 base zoom
+4. Run `pnpm content:blur`, then `pnpm test` (it checks the files exist and the focus values are within 0–1).
+5. Check on a wide screen and a phone that the subject stays visible: that is what the focus values are for.
+
+Keep the slideshow to a handful of slides: the others are preloaded in the background.
