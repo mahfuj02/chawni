@@ -21,7 +21,7 @@ export default async function ProjectsPage({ params }: PageProps<"/[locale]/proj
   const t = await getTranslations("projectsPage");
   const tn = await getTranslations("nav");
   const tc = await getTranslations("common");
-  const projects = await getContentSource().getProjects();
+  const projects = await getContentSource().getProjectCards();
 
   return (
     <>
