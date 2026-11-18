@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { LeaderCard } from "@/components/sections/LeaderCard";
+import { TeamCard } from "@/components/sections/TeamCard";
 import { PageHero } from "@/components/sections/PageHero";
-import { Container, PlaceholderImage, Reveal, SectionLabel } from "@/components/ui";
+import { Container, Photo, Reveal, SectionLabel } from "@/components/ui";
 import { company } from "@/content";
+import { getBlur } from "@/lib/blur";
 import { getContentSource } from "@/lib/content-source";
 import { pageMetadata } from "@/lib/seo";
 
@@ -22,7 +23,7 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   const t = await getTranslations("about");
   const tn = await getTranslations("nav");
   const tc = await getTranslations("common");
-  const leaders = await getContentSource().getLeaders();
+  const team = await getContentSource().getTeam();
 
   const registrations = [
     { label: t("tradeLicence"), value: company.registrations.tradeLicence },
@@ -42,11 +43,12 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
       />
 
       <Container className="pt-12 md:pt-16">
-        <PlaceholderImage
-          caption={t("photoCaption")}
+        <Photo
+          src="/projects/chawni-studio/chawni-studio-01.jpg"
+          blur={getBlur("/projects/chawni-studio/chawni-studio-01-1200.jpg")}
           aspect="21/9"
           alt={t("photoAlt")}
-          sizes="100vw"
+          sizes="(min-width: 1440px) 1296px, 100vw"
           priority
           className="min-h-48"
         />
@@ -94,10 +96,10 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             </h2>
           </div>
           <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {leaders.map((l, i) => (
-              <li key={l.id}>
+            {team.map((m, i) => (
+              <li key={m.slug}>
                 <Reveal delay={(i % 3) * 100}>
-                  <LeaderCard leader={l} />
+                  <TeamCard member={m} />
                 </Reveal>
               </li>
             ))}

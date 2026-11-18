@@ -1,14 +1,14 @@
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLink, Chip, Container, Reveal, SectionLabel } from "@/components/ui";
-import type { TeamLeader } from "@/content/types";
+import type { TeamMemberCardData } from "@/content/types";
 import { pick, type Localized } from "@/lib/localized";
-import { LeaderCard } from "../LeaderCard";
+import { TeamCard } from "../TeamCard";
 
 export function TeamSection({
-  leaders,
+  members,
   disciplines,
 }: {
-  leaders: TeamLeader[];
+  members: TeamMemberCardData[];
   disciplines: Localized[];
 }) {
   const t = useTranslations("team");
@@ -35,10 +35,10 @@ export function TeamSection({
           </ul>
         </div>
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {leaders.map((l, i) => (
-            <li key={l.id}>
+          {members.map((m, i) => (
+            <li key={m.slug}>
               <Reveal delay={i * 100}>
-                <LeaderCard leader={l} />
+                <TeamCard member={m} />
               </Reveal>
             </li>
           ))}
