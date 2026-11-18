@@ -197,12 +197,12 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) setFocusIn(false);
       }}
-      className="relative isolate h-svh min-h-[560px] overflow-hidden bg-[#141414] text-white"
+      className="relative isolate flex min-h-[max(100svh,560px)] flex-col overflow-hidden bg-[#141414] text-white"
     >
       {/* Static layer: always works, and is the LCP element. Hidden once the canvas has faded in. */}
       <div
         className={cn(
-          "absolute inset-x-0 top-0 bottom-[2px] -z-20 transition-[visibility] delay-[900ms] duration-0",
+          "absolute inset-x-0 top-0 bottom-[2px] z-0 transition-[visibility] delay-[900ms] duration-0",
           glReady && showGL && "invisible",
         )}
       >
@@ -246,13 +246,19 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
           onReady={() => setGlReady(true)}
           onFail={() => setGlFailed(true)}
           className={cn(
-            "absolute inset-0 -z-10 size-full transition-opacity duration-[800ms]",
+            "absolute inset-0 z-[1] size-full transition-opacity duration-[800ms]",
             glReady ? "opacity-100" : "opacity-0",
           )}
         />
       )}
 
-      <div aria-hidden="true" className="hero-shade pointer-events-none absolute inset-0 -z-[5]" />
+      {/* Shade: above the static image and the canvas, below the copy. Never intercepts the pointer. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2]">
+        <div className="hero-shade-left absolute inset-0" />
+        <div className="hero-shade-bottom absolute inset-0" />
+        <div className="hero-shade-top absolute inset-0" />
+        <div className="hero-shade-mobile absolute inset-0" />
+      </div>
 
       {copy}
 

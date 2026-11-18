@@ -174,6 +174,7 @@ test.describe("projects filter", () => {
       ["Institutional", 2],
     ] as const) {
       await filter.getByRole("link", { name }).click();
+      await expect(page).toHaveURL(new RegExp("category=" + name.toLowerCase() + "$"));
       await expect(page.locator("main article")).toHaveCount(count);
       total += count;
     }
@@ -712,6 +713,62 @@ test.describe("home hero", () => {
     // The caption is hidden on phones.
     await expect(page.locator("[data-hero] [aria-live=polite]")).toBeHidden();
   });
+
+  test("the shade sits above the image and canvas but below the copy, and never takes the pointer", async ({
+    page,
+  }) => {
+    await page.goto("/en");
+    const z = await page.evaluate(() => {
+      const hero = document.querySelector("[data-hero]")!;
+      const zi = (el: Element | null) => Number(getComputedStyle(el!).zIndex);
+      const shade = hero.querySelector(".hero-shade-left")!.parentElement!;
+      return {
+        image: zi(hero.querySelector("img")!.closest("div.absolute.z-0")),
+        shade: zi(shade),
+        copy: zi(hero.querySelector("h1")!.closest("div.z-10")),
+        pointer: getComputedStyle(shade).pointerEvents,
+        layers: ["left", "bottom", "top", "mobile"].map((n) =>
+          getComputedStyle(hero.querySelector(".hero-shade-" + n)!).backgroundImage.includes(
+            "linear-gradient",
+          ),
+        ),
+      };
+    });
+    expect(z.image).toBeLessThan(z.shade);
+    expect(z.shade).toBeLessThan(z.copy);
+    expect(z.pointer).toBe("none");
+    expect(z.layers).toEqual([true, true, true, true]);
+  });
+
+  for (const [w, h] of [
+    [1920, 1000],
+    [1440, 810],
+    [1366, 650],
+    [390, 844],
+    [768, 1024],
+  ] as const) {
+    test(
+      "the copy never overlaps the header or the controls at " + w + "x" + h,
+      async ({ page }) => {
+        await page.setViewportSize({ width: w, height: h });
+        await page.goto("/en");
+        await page.waitForTimeout(1500);
+        const m = await page.evaluate(() => {
+          const r = (sel: string) => document.querySelector(sel)!.getBoundingClientRect();
+          return {
+            copyTop: r("[data-hero] .hero-rise").top,
+            headerBottom: r("header").bottom,
+            buttonsBottom: r("[data-hero] a[href$='/about']").bottom,
+            controlsTop: r("[data-hero] [role=group]").top,
+            overflow: document.documentElement.scrollWidth - innerWidth,
+          };
+        });
+        expect(m.copyTop).toBeGreaterThanOrEqual(m.headerBottom + 32 - 1);
+        expect(m.buttonsBottom).toBeLessThanOrEqual(m.controlsTop);
+        expect(m.overflow).toBeLessThanOrEqual(0);
+      },
+    );
+  }
 
   test("the Bangla hero headline is shown on /bn", async ({ page }) => {
     await page.goto("/bn");
