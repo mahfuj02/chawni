@@ -1,13 +1,11 @@
-"use client";
-
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type State = "visible" | "hidden" | "shown";
-
 /**
- * Fade-up on enter (16px, 0.6s). Content is visible without JS and for users who
- * prefer reduced motion; only elements below the fold are hidden then revealed.
+ * Fade-up on enter (16px, 0.6s feel), implemented in pure CSS with a scroll-driven
+ * `view()` timeline (see `.reveal` in globals.css). No JavaScript and no hydration cost.
+ * Browsers without scroll-driven animations, and users who prefer reduced motion, simply
+ * see the content in place.
  */
 export function Reveal({
   children,
@@ -15,42 +13,15 @@ export function Reveal({
   className,
 }: {
   children: ReactNode;
+  /** Stagger in milliseconds (approximate: it shifts where the animation starts). */
   delay?: number;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState<State>("visible");
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.9) return;
-
-    setState("hidden");
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setState("shown");
-          io.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px -10% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+  const style = delay
+    ? ({ "--reveal-delay": `${Math.min(delay / 20, 20)}%` } as CSSProperties)
+    : undefined;
   return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: state === "shown" ? `${delay}ms` : undefined }}
-      className={cn(
-        "transition-[opacity,transform] duration-[600ms] ease-[var(--ease-out)]",
-        state === "hidden" && "translate-y-4 opacity-0",
-        className,
-      )}
-    >
+    <div className={cn("reveal", className)} style={style}>
       {children}
     </div>
   );

@@ -11,7 +11,16 @@ export function coverProps(cover: string) {
   return cover.startsWith("/") ? { src: cover, caption: "" } : { src: undefined, caption: cover };
 }
 
-export function PostCard({ post, featured = false }: { post: JournalPost; featured?: boolean }) {
+export function PostCard({
+  post,
+  featured = false,
+  headingLevel: Heading = "h3",
+}: {
+  post: JournalPost;
+  featured?: boolean;
+  /** Use "h2" where the card follows the page title directly (listing pages). */
+  headingLevel?: "h2" | "h3";
+}) {
   const locale = useLocale();
   const t = useTranslations("journalPage");
   const cover = coverProps(post.cover);
@@ -41,14 +50,14 @@ export function PostCard({ post, featured = false }: { post: JournalPost; featur
           </span>
           <time dateTime={post.date}>{formatDate(post.date, locale)}</time>
         </p>
-        <h3 className={featured ? "text-h2" : "text-h3"}>
+        <Heading className={featured ? "text-h2" : "text-h3"}>
           <Link
             href={`/journal/${post.slug}`}
             className="after:absolute after:inset-0 after:content-['']"
           >
             {title}
           </Link>
-        </h3>
+        </Heading>
         <p className="text-muted">{pick(post.excerpt, locale)}</p>
       </div>
     </article>

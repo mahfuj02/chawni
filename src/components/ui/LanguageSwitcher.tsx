@@ -6,7 +6,8 @@ import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 const LABEL: Record<string, string> = { en: "EN", bn: "বাংলা" };
-const LANG_NAME: Record<string, string> = { en: "English", bn: "বাংলা" };
+// Accessible names must contain the visible text (WCAG 2.5.3 Label in Name).
+const LANG_NAME: Record<string, string> = { en: "EN, English", bn: "বাংলা" };
 
 export function LanguageSwitcher({
   className,
@@ -46,7 +47,7 @@ export function LanguageSwitcher({
                   : "text-ink"
                 : onDark
                   ? "text-white/70 hover:text-white"
-                  : "text-muted hover:text-ink",
+                  : "text-ink/75 hover:text-ink",
             )}
           >
             {LABEL[locale]}

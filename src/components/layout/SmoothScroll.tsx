@@ -1,18 +1,24 @@
 "use client";
 
-import Lenis from "lenis";
+import type Lenis from "lenis";
 import { useEffect } from "react";
 import { setLenis } from "@/lib/lenis";
 
-/** Lenis smooth-scroll provider. Disabled entirely for users who prefer reduced motion. */
+/**
+ * Lenis smooth-scroll provider. Lenis is imported after hydration so it never blocks the
+ * first render, and it is disabled entirely for users who prefer reduced motion.
+ */
 export function SmoothScroll() {
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     let lenis: Lenis | null = null;
+    let cancelled = false;
 
-    const start = () => {
+    const start = async () => {
       if (lenis) return;
-      lenis = new Lenis({ autoRaf: true, anchors: true, lerp: 0.1 });
+      const { default: LenisClass } = await import("lenis");
+      if (cancelled || lenis || query.matches) return;
+      lenis = new LenisClass({ autoRaf: true, anchors: true, lerp: 0.1 });
       setLenis(lenis);
     };
     const stop = () => {
@@ -20,11 +26,12 @@ export function SmoothScroll() {
       lenis = null;
       setLenis(null);
     };
-    const sync = () => (query.matches ? stop() : start());
+    const sync = () => (query.matches ? stop() : void start());
 
     sync();
     query.addEventListener("change", sync);
     return () => {
+      cancelled = true;
       query.removeEventListener("change", sync);
       stop();
     };

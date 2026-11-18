@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -8,10 +8,26 @@ import { SkipLink } from "@/components/layout/SkipLink";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { routing } from "@/i18n/routing";
-import { hindSiliguri, inter, sora } from "@/lib/fonts";
 import { SITE_URL } from "@/lib/seo";
-import { cn } from "@/lib/utils";
 import "../globals.css";
+
+/**
+ * Translation namespaces used by client components (anything that calls useTranslations in a
+ * "use client" file, plus cards rendered inside them). Server components read messages
+ * directly, so the rest are never sent to the browser. Add a namespace here when a client
+ * component starts using it.
+ */
+const CLIENT_NAMESPACES = [
+  "common",
+  "nav",
+  "what",
+  "projectsPage",
+  "projectDetail",
+  "journalPage",
+  "contact",
+  "notFound",
+  "error",
+] as const;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -33,14 +49,21 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   // Opt this request into static rendering.
   setRequestLocale(locale);
 
+  const allMessages = await getMessages();
+  const clientMessages = Object.fromEntries(CLIENT_NAMESPACES.map((ns) => [ns, allMessages[ns]]));
+
+  // Each locale only loads (and preloads) the fonts it actually uses.
+  const fontClass =
+    locale === "bn"
+      ? (await import("@/lib/fonts-bn")).hindSiliguri.variable
+      : (({ sora, inter }) => `${sora.variable} ${inter.variable}`)(
+          await import("@/lib/fonts-latin"),
+        );
+
   return (
-    <html
-      lang={locale}
-      className={cn(sora.variable, inter.variable, hindSiliguri.variable)}
-      suppressHydrationWarning
-    >
+    <html lang={locale} className={fontClass} suppressHydrationWarning>
       <body>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={clientMessages}>
           <SkipLink />
           <SmoothScroll />
           <Header />

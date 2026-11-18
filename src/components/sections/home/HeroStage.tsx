@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { HeroScene } from "@/components/three/HeroScene";
-import { useSceneGate } from "@/components/three/useSceneGate";
+import {
+  useFirstInteraction,
+  useSceneGate,
+  useWebGLSupport,
+} from "@/components/three/useSceneGate";
 import { Container } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +22,10 @@ export function HeroStage({ title, children }: { title: string; children: ReactN
   const { ref: sceneRef, mode, near, inView } = useSceneGate<HTMLDivElement>();
   const track = useRef<HTMLElement>(null);
   const progress = useRef(0);
+  const interacted = useFirstInteraction();
   const pinned = mode.mode === "ready";
+  const wantsScene = pinned && near && interacted;
+  const webgl = useWebGLSupport(wantsScene);
 
   useEffect(() => {
     if (!pinned) return;
@@ -70,7 +77,7 @@ export function HeroStage({ title, children }: { title: string; children: ReactN
             <HeroScene
               title={title}
               sceneRef={sceneRef}
-              run={pinned && near}
+              run={wantsScene && webgl}
               inView={inView}
               progress={progress}
             />

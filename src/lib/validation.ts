@@ -1,14 +1,8 @@
 import { z } from "zod";
 
-export const SERVICE_OPTIONS = [
-  "plan",
-  "design",
-  "engineer",
-  "build",
-  "interior",
-  "other",
-] as const;
-export type ServiceOption = (typeof SERVICE_OPTIONS)[number];
+import { SERVICE_OPTIONS } from "./service-options";
+
+export { SERVICE_OPTIONS, type ServiceOption } from "./service-options";
 
 /** Allows digits, spaces, hyphens, parentheses and a leading +. At least 7 digits. */
 const PHONE_RE = /^\+?[\d\s\-()]+$/;

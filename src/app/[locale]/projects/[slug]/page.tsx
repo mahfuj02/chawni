@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowUpRight, Quote } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { ProjectMedia } from "@/components/sections/project/ProjectMedia";
 import { Container, PlaceholderImage, SectionLabel } from "@/components/ui";
 import { hasModel } from "@/content";
@@ -9,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getContentSource } from "@/lib/content-source";
 import { formatNumber } from "@/lib/format";
+import { projectJsonLd } from "@/lib/jsonld";
 import { pick } from "@/lib/localized";
 import { pageMetadata } from "@/lib/seo";
 
@@ -60,6 +62,7 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
 
   return (
     <>
+      <JsonLd data={projectJsonLd(project, locale)} />
       <section className="section-y pb-10 md:pb-12">
         <Container className="flex flex-col gap-6">
           <Link

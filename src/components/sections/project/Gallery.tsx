@@ -44,7 +44,8 @@ export function Gallery({ images, openIndex, onOpenChange }: GalleryProps) {
             <button
               type="button"
               onClick={() => onOpenChange(i)}
-              aria-label={t("openPhoto", { number: i + 1, total })}
+              aria-haspopup="dialog"
+              title={t("openPhoto", { number: i + 1, total })}
               className="group block w-full overflow-hidden rounded-card text-start"
             >
               <span className="block transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]">

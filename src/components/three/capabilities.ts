@@ -26,13 +26,21 @@ export function decideSceneMode(env: SceneEnv): SceneMode {
   return { mode: "ready" };
 }
 
+let webglCache: boolean | undefined;
+
+/**
+ * Probe for WebGL. Creating a context is expensive (very much so on software renderers), so this
+ * is only called right before a scene is about to mount, never during start-up.
+ */
 export function hasWebGL(): boolean {
+  if (webglCache !== undefined) return webglCache;
   try {
     const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+    webglCache = Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
   } catch {
-    return false;
+    webglCache = false;
   }
+  return webglCache;
 }
 
 /** Read the real environment (browser only). */
@@ -40,7 +48,8 @@ export function readSceneEnv(): SceneEnv {
   const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
   return {
     reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    webgl: hasWebGL(),
+    // Not probed here (see hasWebGL): scenes check right before mounting.
+    webgl: true,
     hardwareConcurrency: nav.hardwareConcurrency ?? 8,
     saveData: Boolean(nav.connection?.saveData),
     forced: new URLSearchParams(window.location.search).get("force3d") === "1",

@@ -70,7 +70,7 @@ export function ProjectsView({
         <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((p) => (
             <li key={p.slug}>
-              <ProjectCard project={p} />
+              <ProjectCard project={p} headingLevel="h2" />
             </li>
           ))}
         </ul>
