@@ -1,26 +1,102 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  html {
+    scroll-padding-top: calc(var(--header-h) + 16px);
+    -webkit-text-size-adjust: 100%;
+  }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  body {
+    background: var(--color-white);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Bangla: Hind Siliguri replaces both heading and body fonts. */
+  html[lang="bn"] {
+    --font-sora: var(--font-hind-siliguri);
+    --font-inter: var(--font-hind-siliguri);
+  }
+  html[lang="bn"] body {
+    line-height: 1.8;
+  }
+  html[lang="bn"] h1,
+  html[lang="bn"] h2,
+  html[lang="bn"] h3 {
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  /* Visible focus for everyone using a keyboard (WCAG 2.4.7 / 2.4.11) */
+  :focus-visible {
+    outline: 3px solid var(--color-orange);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .on-dark :focus-visible,
+  .on-orange :focus-visible {
+    outline-color: var(--color-white);
+  }
+  .on-orange :focus-visible {
+    outline-color: var(--color-ink);
+  }
+
+  ::selection {
+    background: var(--color-orange);
+    color: var(--color-ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .section-y {
+    padding-block: var(--section-y);
+  }
+  .px-gutter {
+    padding-inline: var(--gutter);
+  }
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Lenis recommended CSS */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
