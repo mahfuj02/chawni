@@ -84,7 +84,7 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
                 <Reveal delay={100} className="flex flex-col gap-6">
                   <span
                     aria-hidden="true"
-                    className="font-heading text-[clamp(4rem,2.5rem+6vw,8rem)] leading-none font-semibold text-orange"
+                    className="font-heading text-[clamp(4rem,2.5rem+6vw,8rem)] leading-none font-semibold text-orange-text"
                   >
                     {p.number}
                   </span>
