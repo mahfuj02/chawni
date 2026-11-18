@@ -59,7 +59,7 @@ function StructureOverlay({ drawn }: { drawn: boolean }) {
 
 function Caption({ frame }: { frame: StageFrame }) {
   const cls =
-    "absolute bottom-3 left-3 z-10 rounded-[4px] bg-ink/80 px-3 py-1.5 text-[13px] font-medium text-white";
+    "absolute bottom-3 left-3 z-10 inline-flex min-h-11 items-center rounded-[4px] bg-ink/80 px-3 text-[13px] font-medium text-white";
   return frame.href ? (
     <Link href={frame.href} className={cn(cls, "hover:bg-ink focus-visible:bg-ink")}>
       {frame.caption}

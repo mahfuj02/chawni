@@ -42,3 +42,17 @@ Section padding 80–130px desktop, 64px mobile. Max width 1440px; side padding 
 ## Motion
 
 Subtle: fade-up 16px / 0.6s, counters on view, image reveal. Disabled under `prefers-reduced-motion`.
+
+## Brand rules (audited for v0.4.0)
+
+These are checked page by page, in en and bn, at 390, 768 and 1440px.
+
+- **Logo:** orange `#F47C24` never changes. Light logo on dark, photo or sky backgrounds; dark logo on white or light ones. Clear space is at least the tag height. No stretched, recoloured or redrawn versions.
+- **Header:** transparent with the light logo only over the Home hero (it turns white with the dark logo after 80% of the hero); white with the dark logo everywhere else.
+- **Orange:** an accent only (buttons, markers, numbers, rules, the underline highlight). Text on orange is ink `#141414`, never white. Orange text or numerals on white or mist use the `orange-text` token (it is a touch darker than `#C2560E`, `#B8510C`, so it still passes 4.5:1 on the mist background); plain `#F47C24` is only for text on dark backgrounds.
+- **Text contrast:** body is ink, secondary text is `#5C6066` or darker. All text meets 4.5:1 (3:1 at 24px and up).
+- **Type:** Sora for headings and numbers, Inter for body, Hind Siliguri for both in Bangla. Section labels are lowercase with an orange square ("who we are").
+- **Shape:** 4px radius on cards and images, pill buttons, 44px minimum touch targets (including breadcrumb and contact links), consistent section padding and max width.
+- **Imagery:** real photos everywhere, with no placeholder blocks. Team portraits are black and white at 4:5; members without a photo are listed by name only until one exists. Every image has meaningful alt text, or an empty alt when decorative.
+- **Motion:** subtle and purposeful, nothing bouncy, everything respects `prefers-reduced-motion`. Only the hero, the logo intro and the What-we-do sequence use scroll or WebGL effects (plus the project 3D viewer, which the visitor starts).
+- **Name:** ছাউনি everywhere in Bangla, including the footer and Bangla project titles. Project and journal text that exists only in English still says "Chawni" until it is translated.

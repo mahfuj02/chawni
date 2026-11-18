@@ -289,17 +289,27 @@ test.describe("project detail", () => {
 });
 
 test.describe("about and team", () => {
-  test("About shows all six team members, with initials tiles where there is no photo", async ({
+  test("About shows four portrait cards (black and white, 4:5) and lists the two members without a photo by name", async ({
     page,
   }) => {
     await page.goto("/en/about");
     const members = page.locator("#leadership article");
     // Portraits load lazily, so bring the grid into view first.
     await members.last().scrollIntoViewIfNeeded();
-    await expect(members).toHaveCount(6);
+    await expect(members).toHaveCount(4);
     await expect(members.getByText("Co-founder")).toHaveCount(2);
-    await expect(members.getByText("Photo coming soon")).toHaveCount(2);
     await expect(members.locator("img")).toHaveCount(4);
+    await expect(members.first().locator("img")).toHaveCSS("filter", "grayscale(1)");
+    // No placeholder tiles; members without a photo are listed by name.
+    await expect(page.getByText(/coming soon/i)).toHaveCount(0);
+    const also = page.locator("#leadership").getByRole("heading", { name: "Also on the team" });
+    await expect(also).toBeVisible();
+    await expect(
+      page
+        .locator("#leadership li")
+        .filter({ hasText: "·" })
+        .or(page.locator("#leadership ul").last().locator("li")),
+    ).not.toHaveCount(0);
   });
 
   test("Home shows the four members who have photos", async ({ page }) => {

@@ -999,6 +999,7 @@ export const projects: Project[] = [
   {
     slug: "chawni-studio",
     title: "Chawni Studio",
+    titleBn: "ছাউনি স্টুডিও",
     category: "Interior",
     scope: "Our own office",
     status: "Completed",

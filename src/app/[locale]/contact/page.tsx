@@ -78,7 +78,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
                             <a
                               key={line.text}
                               href={line.href}
-                              className="inline-flex min-h-8 items-center underline-offset-4 hover:underline"
+                              className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
                             >
                               {line.text}
                             </a>
