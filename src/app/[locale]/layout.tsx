@@ -9,6 +9,7 @@ import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { routing } from "@/i18n/routing";
 import { hindSiliguri, inter, sora } from "@/lib/fonts";
+import { SITE_URL } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import "../globals.css";
 
@@ -20,6 +21,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
   return {
+    metadataBase: new URL(SITE_URL),
     title: { template: t("titleTemplate"), default: t("defaultTitle") },
     description: t("defaultDescription"),
   };
