@@ -240,7 +240,7 @@ export function PhaseFallback({ phase, title }: { phase: PhaseKey; title: string
           [8.2, 5.6],
         ].map(([tx, ty], i) => {
           const [cx, cy] = P(tx, ty, 0.9);
-          return <circle key={i} cx={cx} cy={cy} r={20} fill="#9fb8a2" />;
+          return <circle key={i} cx={cx} cy={cy} r={20} fill="#dfe4e9" />;
         })}
       </Layer>
     </svg>
