@@ -7,7 +7,7 @@ Bilingual (English / বাংলা), content-driven, with three lazy-loaded 3D
 Content is **real** as of v0.2.0 (25 projects, 269 photos, 12 interactive 3D models, the team). A few items are
 still missing, listed in [docs/HANDOVER.md](docs/HANDOVER.md). How to edit content: [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md).
 
-**Status: v0.2.0.** Real projects, photos, team and 3D models are in; pages, SEO and tests are complete.
+**Status: v0.3.0.** Real content plus a full-screen depth-parallax project hero on Home.
 Still missing: office address, some years/areas, two team photos, client logos, journal review. See [docs/HANDOVER.md](docs/HANDOVER.md).
 
 ## Stack

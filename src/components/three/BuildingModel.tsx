@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 import type { PhaseKey } from "@/content/types";
-import { BRAND } from "./mark-lines";
+import { BRAND } from "./brand";
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 

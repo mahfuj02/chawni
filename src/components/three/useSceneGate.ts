@@ -74,35 +74,6 @@ export function useSceneGate<T extends HTMLElement = HTMLDivElement>(rootMargin 
   return { ref, mode, near, inView };
 }
 
-const INTERACTION_EVENTS = [
-  "pointerdown",
-  "pointermove",
-  "wheel",
-  "keydown",
-  "touchstart",
-  "scroll",
-] as const;
-
-/**
- * True after the visitor's first interaction (move, touch, key, scroll). Used to postpone the
- * hero's heavy 3D start so the page paints and becomes interactive first; until then the
- * lightweight static illustration is shown.
- */
-export function useFirstInteraction(): boolean {
-  const [interacted, setInteracted] = useState(false);
-
-  useEffect(() => {
-    if (interacted) return;
-    const done = () => setInteracted(true);
-    INTERACTION_EVENTS.forEach((e) =>
-      window.addEventListener(e, done, { once: true, passive: true }),
-    );
-    return () => INTERACTION_EVENTS.forEach((e) => window.removeEventListener(e, done));
-  }, [interacted]);
-
-  return interacted;
-}
-
 /**
  * Lazily checks WebGL support at the moment a scene wants to mount (`wanted` turns true).
  * Returns false until then, so no GL context is created during start-up.

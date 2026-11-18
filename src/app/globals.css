@@ -100,6 +100,57 @@
   }
 }
 
+/* Home hero: focus point of each slide (set per image as custom properties). */
+.hero-img {
+  object-position: var(--fx, 50%) var(--fy, 50%);
+}
+@media (max-aspect-ratio: 1/1) {
+  .hero-img {
+    object-position: var(--fxm, 50%) var(--fy, 50%);
+  }
+}
+.hero-shade {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 12, 16, 0.78) 0%,
+      rgba(10, 12, 16, 0.55) 32%,
+      rgba(10, 12, 16, 0.12) 58%,
+      rgba(10, 12, 16, 0) 75%
+    ),
+    linear-gradient(0deg, rgba(10, 12, 16, 0.7) 0%, rgba(10, 12, 16, 0) 35%),
+    linear-gradient(180deg, rgba(10, 12, 16, 0.55) 0%, rgba(10, 12, 16, 0) 22%);
+}
+@media (max-width: 760px) {
+  .hero-shade {
+    background: linear-gradient(
+      0deg,
+      rgba(10, 12, 16, 0.85) 0%,
+      rgba(10, 12, 16, 0.35) 55%,
+      rgba(10, 12, 16, 0.25) 100%
+    );
+  }
+}
+/* Entrance: rise and fade in, staggered by --d. Pure CSS, so it costs no JavaScript. */
+@keyframes hero-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-rise {
+  animation: hero-up 1s var(--d, 0s) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise {
+    animation: none;
+  }
+}
+
 /* Lenis recommended CSS */
 html.lenis,
 html.lenis body {

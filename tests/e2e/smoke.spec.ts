@@ -536,7 +536,7 @@ test.describe("home page content", () => {
     ]) {
       await expect(page.getByRole("heading", { name: heading })).toBeVisible();
     }
-    await expect(page.locator("main > section").first()).toHaveClass(/bg-sky/);
+    await expect(page.locator("main > section").first()).toHaveAttribute("data-hero", "true");
   });
 
   test("the phase chips scroll to and highlight their phase", async ({ page }) => {
@@ -552,19 +552,169 @@ test.describe("home page content", () => {
       page.getByRole("heading", { name: "Engineer", level: 3, exact: true }),
     ).toBeInViewport();
   });
+});
 
-  test("the hero static illustration is available without 3D (reduced motion)", async ({
+test.describe("home hero", () => {
+  const caption = (page: import("@playwright/test").Page) =>
+    page.locator("[data-hero] [aria-live=polite] b");
+
+  test("shows the headline, the first slide's caption and the full-screen image", async ({
+    page,
+  }) => {
+    await page.goto("/en");
+    const hero = page.locator("[data-hero]");
+    await expect(hero.getByRole("heading", { level: 1 })).toContainText(
+      "For an environment to live.",
+    );
+    await expect(caption(page)).toHaveText("Hotel Paradise Inn");
+    await expect(
+      hero.getByRole("img", { name: "Hotel Paradise Inn by Chawni Architectures" }),
+    ).toBeVisible();
+    await expect(hero.getByRole("link", { name: "View our projects" })).toHaveAttribute(
+      "href",
+      "/en/projects",
+    );
+    await expect(hero.getByRole("link", { name: "Who we are" })).toHaveAttribute(
+      "href",
+      "/en/about",
+    );
+    const box = await hero.boundingBox();
+    expect(box?.height).toBeGreaterThanOrEqual(560);
+  });
+
+  test("the first slide is a priority next/image (the LCP), rendered by the server", async ({
+    request,
+  }) => {
+    const html = await (await request.get("/en")).text();
+    // A real <img> in the server HTML, plus a preload for it: no JavaScript needed to paint it.
+    expect(html).toMatch(
+      /<img[^>]+alt="Hotel Paradise Inn by Chawni Architectures"[^>]+hero%2Fparadise.jpg/,
+    );
+    expect(html).toMatch(/<link rel="preload" as="image"[^>]+hero%2Fparadise.jpg/);
+    expect(html).not.toMatch(/<canvas/);
+  });
+
+  test("clicking slide 3's control changes the caption", async ({ page }) => {
+    await page.goto("/en");
+    const dots = page.getByRole("group", { name: "Choose a project" });
+    await expect(dots.getByRole("button")).toHaveCount(4);
+    await dots.getByRole("button", { name: "Show Duplex Residence, Akhalia" }).click();
+    await expect(caption(page)).toHaveText("Duplex Residence, Akhalia");
+    await expect(
+      dots.getByRole("button", { name: "Show Duplex Residence, Akhalia" }),
+    ).toHaveAttribute("aria-current", "true");
+    await expect(
+      page.locator("[data-hero]").getByRole("link", { name: /Duplex Residence, Akhalia/ }),
+    ).toHaveAttribute("href", "/en/projects/duplex-akhalia");
+  });
+
+  test("arrow keys move between slides from a focused control", async ({ page }) => {
+    await page.goto("/en");
+    const dots = page.getByRole("group", { name: "Choose a project" });
+    await dots.getByRole("button").first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(caption(page)).toHaveText("Two-Storey Mosque");
+    await page.keyboard.press("ArrowLeft");
+    await expect(caption(page)).toHaveText("Hotel Paradise Inn");
+  });
+
+  test("auto-advances, and the Pause button stops it", async ({ page }) => {
+    await page.goto("/en");
+    await expect(caption(page)).toHaveText("Two-Storey Mosque", { timeout: 15_000 });
+
+    const pause = page.getByRole("button", { name: "Pause" });
+    await pause.click();
+    await expect(page.getByRole("button", { name: "Play" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    const before = await caption(page).textContent();
+    await page.waitForTimeout(9_000);
+    await expect(caption(page)).toHaveText(before ?? "");
+
+    await page.getByRole("button", { name: "Play" }).click();
+    await expect(page.getByRole("button", { name: "Pause" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+  });
+
+  test("the WebGL layer takes over from the static image, and is hidden from assistive tech", async ({
+    page,
+  }) => {
+    await page.goto("/en");
+    const canvas = page.locator("[data-hero] canvas");
+    await expect(canvas).toHaveAttribute("aria-hidden", "true", { timeout: 20_000 });
+    await expect(canvas).toHaveCSS("opacity", "1", { timeout: 20_000 });
+  });
+
+  test("with reduced motion the static image stays, there is no canvas, and controls still work", async ({
     browser,
   }) => {
     const context = await browser.newContext({ reducedMotion: "reduce" });
     const page = await context.newPage();
     await page.goto("/en");
-    await page.mouse.move(100, 100);
-    await page.waitForTimeout(500);
+    await page.mouse.move(300, 300);
+    await page.waitForTimeout(1_500);
     await expect(page.locator("canvas")).toHaveCount(0);
     await expect(
-      page.getByRole("img", { name: /Interactive 3D model: the Chawni logo/ }).first(),
+      page.locator("[data-hero]").getByRole("img", { name: /Hotel Paradise Inn by Chawni/ }),
     ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Pause" })).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Show Windsor Hotel" }).click();
+    await expect(page.locator("[data-hero] [aria-live=polite] b")).toHaveText("Windsor Hotel");
+    await expect(
+      page.locator("[data-hero]").getByRole("img", { name: /Windsor Hotel by Chawni/ }),
+    ).toBeVisible();
+    // No auto-advance either.
+    await page.waitForTimeout(8_000);
+    await expect(page.locator("[data-hero] [aria-live=polite] b")).toHaveText("Windsor Hotel");
     await context.close();
+  });
+
+  test("the header floats over the hero in white, then becomes the white header", async ({
+    page,
+  }) => {
+    await page.goto("/en");
+    const header = page.getByRole("banner");
+    await expect(header).toHaveCSS("position", "fixed");
+    await expect(header).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(header.getByRole("link", { name: "About us" })).toHaveCSS("color", /255|0.99/);
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.9));
+    await expect(header).toHaveCSS("background-color", "rgb(255, 255, 255)", { timeout: 3_000 });
+    await expect(header.getByRole("link", { name: "About us" })).toHaveCSS(
+      "color",
+      /^(oklab\(0\.1|rgba?\(20, 20, 20)/,
+    );
+  });
+
+  test("other pages keep the normal sticky white header", async ({ page }) => {
+    await page.goto("/en/about");
+    await expect(page.getByRole("banner")).toHaveCSS("position", "sticky");
+    await expect(page.getByRole("banner")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  });
+
+  test("a 390x844 phone shows the copy without horizontal overflow", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en");
+    const h1 = page.locator("[data-hero] h1");
+    await expect(h1).toBeVisible();
+    const box = await h1.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+    await expect(page.getByRole("link", { name: "View our projects" })).toBeInViewport();
+    await expect(page.getByRole("group", { name: "Choose a project" })).toBeInViewport();
+    // The caption is hidden on phones.
+    await expect(page.locator("[data-hero] [aria-live=polite]")).toBeHidden();
+  });
+
+  test("the Bangla hero headline is shown on /bn", async ({ page }) => {
+    await page.goto("/bn");
+    await expect(page.locator("[data-hero] h1")).toContainText("বসবাসের জন্য একটি পরিবেশ।");
   });
 });

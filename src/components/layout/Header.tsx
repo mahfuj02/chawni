@@ -3,8 +3,10 @@
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Button, LanguageSwitcher, Logo } from "@/components/ui";
+import { Button, LanguageSwitcher } from "@/components/ui";
+import { logoSrc } from "@/components/ui/Logo";
 import { Link, usePathname } from "@/i18n/navigation";
 import { getLenis } from "@/lib/lenis";
 import { NAV_ITEMS, isActive } from "@/lib/nav";
@@ -15,24 +17,35 @@ const loadMobileMenu = () => import("./MobileMenu");
 const MobileMenu = dynamic(loadMobileMenu, { ssr: false });
 
 /**
- * Sticky header. On Home the top of the page is the sky-blue hero, so the header
- * starts sky-coloured (light logo) and turns white with a hairline after scrolling.
- * Everywhere else it is white from the start (dark logo).
+ * Header. On Home it floats transparently over the full-screen hero (light logo, white links) and
+ * switches to the normal white style (dark logo) once the visitor has scrolled past 80% of the hero.
+ * On every other page it is the usual sticky white header.
  */
 export function Header() {
   const t = useTranslations("nav");
   const tc = useTranslations("common");
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
+  const isHome = pathname === "/";
   const [open, setOpen] = useState(false);
   const [menuRequested, setMenuRequested] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 8);
+      const hero = document.querySelector<HTMLElement>("[data-hero]");
+      const heroHeight = hero?.offsetHeight ?? window.innerHeight;
+      setPastHero(window.scrollY > heroHeight * 0.8);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
 
   // Pause Lenis while the full-screen menu is open.
   useEffect(() => {
@@ -42,19 +55,54 @@ export function Header() {
     return () => lenis?.start();
   }, [open]);
 
-  const onSky = pathname === "/" && !scrolled && !open;
+  const overHero = isHome && !pastHero && !open;
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 h-[var(--header-h)] border-b transition-colors duration-300",
-        onSky ? "border-transparent bg-sky" : "border-line bg-white",
+        "top-0 z-50 h-[var(--header-h)] border-b transition-colors duration-300",
+        isHome ? "fixed inset-x-0" : "sticky",
+        overHero ? "border-transparent bg-transparent" : "border-line bg-white",
         !scrolled && !open && "border-transparent",
       )}
     >
       <div className="px-gutter mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-6">
         <Link href="/" aria-label="Chawni Architectures" className="shrink-0">
-          <Logo compact variant={onSky ? "light" : "dark"} width={68} priority />
+          {/* Both logos are stacked and cross-faded, so the swap animates over 300 ms. */}
+          <span
+            className={cn(
+              "relative block transition-[width,height] duration-300",
+              overHero ? "h-[52px] w-[51px] md:h-[78px] md:w-[77px]" : "h-[68px] w-[67px]",
+            )}
+          >
+            <Image
+              src={logoSrc("dark", true)}
+              alt="Chawni Architectures"
+              width={77}
+              height={78}
+              priority
+              unoptimized
+              className={cn(
+                "absolute inset-0 size-full transition-opacity duration-300",
+                overHero ? "opacity-0" : "opacity-100",
+              )}
+            />
+            {isHome && (
+              <Image
+                src={logoSrc("light", true)}
+                alt=""
+                aria-hidden="true"
+                width={77}
+                height={78}
+                priority
+                unoptimized
+                className={cn(
+                  "absolute inset-0 size-full transition-opacity duration-300",
+                  overHero ? "opacity-100" : "opacity-0",
+                )}
+              />
+            )}
+          </span>
         </Link>
 
         <nav aria-label={t("primary")} className="hidden lg:block">
@@ -68,7 +116,13 @@ export function Header() {
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "inline-flex min-h-11 items-center rounded-full px-4 text-[0.9375rem] font-medium transition-colors",
-                      active ? "text-ink" : "text-ink/70 hover:text-ink",
+                      overHero
+                        ? active
+                          ? "text-white"
+                          : "text-white/90 hover:text-white"
+                        : active
+                          ? "text-ink"
+                          : "text-ink/70 hover:text-ink",
                       active && "underline decoration-orange decoration-2 underline-offset-8",
                     )}
                   >
@@ -81,7 +135,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 md:gap-4">
-          <LanguageSwitcher className="hidden sm:flex" />
+          <LanguageSwitcher className="hidden sm:flex" onDark={overHero} />
           <Button asChild className="hidden lg:inline-flex">
             <Link href="/contact">{t("contactUs")}</Link>
           </Button>
@@ -97,7 +151,10 @@ export function Header() {
               setMenuRequested(true);
               setOpen(true);
             }}
-            className="inline-flex size-12 items-center justify-center rounded-full text-ink hover:bg-ink/5 lg:hidden"
+            className={cn(
+              "inline-flex size-12 items-center justify-center rounded-full transition-colors lg:hidden",
+              overHero ? "text-white hover:bg-white/10" : "text-ink hover:bg-ink/5",
+            )}
           >
             <Menu aria-hidden="true" className="size-7" />
           </button>

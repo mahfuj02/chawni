@@ -1,5 +1,5 @@
 /**
- * Writes tiny base64 blur placeholders for every image in public/projects and public/team
+ * Writes tiny base64 blur placeholders for every image in public/projects, public/team and public/hero
  * to src/content/blur.json, keyed by public path ("/projects/<slug>/<file>.jpg").
  *
  * Run with: pnpm content:blur   (needs Node 22.18+ so .ts files run directly)
@@ -10,7 +10,7 @@ import sharp from "sharp";
 
 const ROOT = process.cwd();
 const PUBLIC = path.join(ROOT, "public");
-const FOLDERS = ["projects", "team"];
+const FOLDERS = ["projects", "team", "hero"];
 
 async function walk(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
