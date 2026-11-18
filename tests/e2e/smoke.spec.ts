@@ -24,7 +24,9 @@ test.describe("every route renders in en and bn", () => {
     }
   }
 
-  test("all 8 project pages and all 6 journal posts exist in both locales", async ({ request }) => {
+  test("all 25 project pages and all 6 journal posts exist in both locales", async ({
+    request,
+  }) => {
     for (const locale of LOCALES) {
       for (const slug of ALL_PROJECT_SLUGS) {
         expect((await request.get(`/${locale}/projects/${slug}`)).status()).toBe(200);
@@ -33,7 +35,7 @@ test.describe("every route renders in en and bn", () => {
         expect((await request.get(`/${locale}/journal/${slug}`)).status()).toBe(200);
       }
     }
-    expect(ALL_PROJECT_SLUGS).toHaveLength(8);
+    expect(ALL_PROJECT_SLUGS).toHaveLength(25);
     expect(ALL_JOURNAL_SLUGS).toHaveLength(6);
   });
 
@@ -123,17 +125,23 @@ test.describe("navigation", () => {
 });
 
 test.describe("projects filter", () => {
+  test("shows 25 projects and a count label", async ({ page }) => {
+    await page.goto("/en/projects");
+    await expect(page.locator("main article")).toHaveCount(25);
+    await expect(page.getByRole("status")).toHaveText("25 projects");
+  });
+
   test("filtering updates the URL and the list, and is shareable", async ({ page }) => {
     await page.goto("/en/projects");
     const cards = page.locator("main article");
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(25);
 
     const filter = page.getByRole("navigation", { name: "Filter projects by category" });
-    await filter.getByRole("link", { name: "Residential" }).click();
-    await expect(page).toHaveURL(/\/en\/projects\/?\?category=residential$/);
+    await filter.getByRole("link", { name: "Hospitality" }).click();
+    await expect(page).toHaveURL(/\/en\/projects\/?\?category=hospitality$/);
     await expect(cards).toHaveCount(2);
     await expect(page.getByRole("status")).toHaveText("2 projects");
-    await expect(filter.getByRole("link", { name: "Residential" })).toHaveAttribute(
+    await expect(filter.getByRole("link", { name: "Hospitality" })).toHaveAttribute(
       "aria-current",
       "true",
     );
@@ -142,63 +150,205 @@ test.describe("projects filter", () => {
     await page.reload();
     await expect(cards).toHaveCount(2);
 
-    await filter.getByRole("link", { name: "Interior" }).click();
-    await expect(page).toHaveURL(/category=interior$/);
+    await filter.getByRole("link", { name: "Residential" }).click();
+    await expect(page).toHaveURL(/category=residential$/);
+    await expect(cards).toHaveCount(9);
+
+    await filter.getByRole("link", { name: "Institutional" }).click();
     await expect(cards).toHaveCount(2);
 
     await filter.getByRole("link", { name: "All" }).click();
     await expect(page).not.toHaveURL(/category=/);
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(25);
+  });
+
+  test("every category exists as a filter and the counts add up", async ({ page }) => {
+    await page.goto("/en/projects");
+    const filter = page.getByRole("navigation", { name: "Filter projects by category" });
+    let total = 0;
+    for (const [name, count] of [
+      ["Residential", 9],
+      ["Commercial", 1],
+      ["Hospitality", 2],
+      ["Interior", 11],
+      ["Institutional", 2],
+    ] as const) {
+      await filter.getByRole("link", { name }).click();
+      await expect(page.locator("main article")).toHaveCount(count);
+      total += count;
+    }
+    expect(total).toBe(25);
+  });
+
+  test("each card shows a status badge: dark when Completed, white otherwise", async ({ page }) => {
+    await page.goto("/en/projects");
+    const first = page.locator("main article").first();
+    await expect(first.getByText("Completed")).toHaveClass(/bg-ink/);
+    const proposed = page.locator("main article", { hasText: "Hotel Paradise Inn" });
+    await expect(proposed.getByText("Proposed")).toHaveClass(/bg-white/);
   });
 
   test("an unknown category falls back to all projects", async ({ page }) => {
     await page.goto("/en/projects?category=spaceships");
-    await expect(page.locator("main article")).toHaveCount(8);
+    await expect(page.locator("main article")).toHaveCount(25);
+  });
+
+  test("the old dummy category is gone", async ({ page }) => {
+    await page.goto("/en/projects");
+    const filter = page.getByRole("navigation", { name: "Filter projects by category" });
+    await expect(filter.getByRole("link", { name: "Construction" })).toHaveCount(0);
   });
 
   test("the filter works in Bangla too", async ({ page }) => {
     await page.goto("/bn/projects");
     await page
       .getByRole("navigation", { name: "ক্যাটাগরি অনুযায়ী প্রকল্প ছাঁকুন" })
-      .getByRole("link", { name: "বাণিজ্যিক" })
+      .getByRole("link", { name: "আতিথেয়তা" })
       .click();
-    await expect(page).toHaveURL(/\/bn\/projects\/?\?category=commercial$/);
+    await expect(page).toHaveURL(/\/bn\/projects\/?\?category=hospitality$/);
     await expect(page.locator("main article")).toHaveCount(2);
   });
 });
 
 test.describe("project detail", () => {
-  test("shows facts, the Explore in 3D section and the next-project link", async ({ page }) => {
-    await page.goto("/en/projects/courtyard-house");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Courtyard House");
-    for (const label of ["Location", "Client", "Size", "Scope", "Completed"]) {
+  test("a project with a model shows the facts that exist and the Explore in 3D section", async ({
+    page,
+  }) => {
+    await page.goto("/en/projects/hotel-paradise-inn");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Hotel Paradise Inn");
+    for (const label of ["Location", "Area", "Scope", "Status"]) {
       await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
     }
+    // No client and no year are given for this project, so those facts are not shown.
+    await expect(page.getByText("Client", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Year", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Walk around the model." })).toBeVisible();
     await page.getByRole("link", { name: /Next project/ }).click();
-    await expect(page).toHaveURL(/\/en\/projects\/riverside-residence\/?$/);
+    await expect(page).toHaveURL(/\/en\/projects\/samriddhi\/?$/);
+  });
+
+  test("a photos-only project has no Explore in 3D section", async ({ page }) => {
+    await page.goto("/en/projects/nirjhar-education");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nirjhar Education Sylhet");
+    await expect(page.getByRole("heading", { name: "Walk around the model." })).toHaveCount(0);
+    await expect(page.locator("canvas")).toHaveCount(0);
+    await expect(page.getByText("Client", { exact: true })).toBeVisible();
+    await expect(page.getByText("Photography: Shumon Chowdhury")).toBeVisible();
+  });
+
+  test("Bangla titles are used where they exist", async ({ page }) => {
+    await page.goto("/bn/projects/samriddhi");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("সমৃদ্ধি");
+  });
+
+  test("the 3D viewer has Rotate, Explode and Show photos controls and labelled hotspots", async ({
+    page,
+  }) => {
+    await page.goto("/en/projects/hotel-paradise-inn?force3d=1");
+    await page.locator("#explore-heading").scrollIntoViewIfNeeded();
+    const toolbar = page.getByRole("toolbar");
+    await expect(toolbar.getByRole("button", { name: "Rotate" })).toBeVisible();
+    await expect(toolbar.getByRole("button", { name: "Explode floors" })).toBeVisible();
+    await expect(toolbar.getByRole("button", { name: "Show photos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    // Controls unlock once the 3D view has loaded.
+    await expect(toolbar.getByRole("button", { name: "Explode floors" })).toBeEnabled({
+      timeout: 30_000,
+    });
+    const hotspot = page.getByRole("button", { name: "Lobby entrance — open photo 2" });
+    await expect(hotspot).toBeVisible({ timeout: 30_000 });
+    await hotspot.click();
+    await expect(page.getByRole("dialog").getByText("02 / 19")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await toolbar.getByRole("button", { name: "Show photos" }).click();
+    await expect(page.getByRole("button", { name: /open photo/ })).toHaveCount(0);
   });
 
   test("the gallery lightbox opens, steps through photos with a counter, and closes", async ({
     page,
   }) => {
-    await page.goto("/en/projects/courtyard-house");
+    await page.goto("/en/projects/windsor-hotel");
+    await expect(page.getByText("Photography: Rmsi Prottoy")).toBeVisible();
     await page.locator("#gallery-heading").scrollIntoViewIfNeeded();
-    await page
-      .getByRole("button", { name: /house exterior/i })
-      .first()
-      .click();
+    await page.getByRole("button", { name: /photo 01/ }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByText("01 / 06")).toBeVisible();
+    await expect(dialog.getByText("01 / 24")).toBeVisible();
     await dialog.getByRole("button", { name: "Next photo" }).click();
-    await expect(dialog.getByText("02 / 06")).toBeVisible();
+    await expect(dialog.getByText("02 / 24")).toBeVisible();
     await page.keyboard.press("ArrowRight");
-    await expect(dialog.getByText("03 / 06")).toBeVisible();
+    await expect(dialog.getByText("03 / 24")).toBeVisible();
     await page.keyboard.press("ArrowLeft");
-    await expect(dialog.getByText("02 / 06")).toBeVisible();
+    await expect(dialog.getByText("02 / 24")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
+  });
+});
+
+test.describe("about and team", () => {
+  test("About shows all six team members, with initials tiles where there is no photo", async ({
+    page,
+  }) => {
+    await page.goto("/en/about");
+    const members = page.locator("#leadership article");
+    // Portraits load lazily, so bring the grid into view first.
+    await members.last().scrollIntoViewIfNeeded();
+    await expect(members).toHaveCount(6);
+    await expect(members.getByText("Co-founder")).toHaveCount(2);
+    await expect(members.getByText("Photo coming soon")).toHaveCount(2);
+    await expect(members.locator("img")).toHaveCount(4);
+  });
+
+  test("Home shows the four members who have photos", async ({ page }) => {
+    await page.goto("/en");
+    const section = page.locator('section[aria-labelledby="team-heading"]');
+    await expect(section.locator("article")).toHaveCount(4);
+    await expect(section.getByText("Photo coming soon")).toHaveCount(0);
+  });
+
+  test("the contact page shows both phone numbers and the email", async ({ page }) => {
+    await page.goto("/en/contact");
+    const main = page.locator("main");
+    await expect(main.getByRole("link", { name: "+880 1714 912091" })).toHaveAttribute(
+      "href",
+      "tel:+8801714912091",
+    );
+    await expect(main.getByRole("link", { name: "+880 1738 572355" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "chawnimn@gmail.com" })).toBeVisible();
+  });
+
+  test("the Bangla name is spelled ছাউনি, never চাউনি", async ({ page }) => {
+    await page.goto("/bn");
+    const text = await page.locator("body").innerText();
+    expect(text).not.toContain("চাউনি");
+    await expect(page).toHaveTitle(/ছাউনি/);
+  });
+});
+
+test.describe("home projects and clients", () => {
+  test("features Windsor Hotel, Nirjhar Education and Hotel Paradise Inn", async ({ page }) => {
+    await page.goto("/en");
+    const section = page.locator('section[aria-labelledby="projects-heading"]');
+    await expect(section.locator("article h3")).toHaveText([
+      "Windsor Hotel",
+      "Nirjhar Education Sylhet",
+      "Hotel Paradise Inn",
+    ]);
+  });
+
+  test("shows the six client wordmarks", async ({ page }) => {
+    await page.goto("/en");
+    const logos = page.getByRole("list", { name: "Client logos" });
+    await expect(logos.locator("li")).toHaveText([
+      "Windsor Hotel",
+      "Team Consultancy UK",
+      "Nirjhar Education",
+      "Study Milestone",
+      "YES Academy",
+      "Zaman Associates",
+    ]);
   });
 });
 
@@ -212,9 +362,9 @@ test.describe("journal", () => {
     await expect(page.getByRole("button", { name: "Load more" })).toBeHidden();
 
     const filter = page.getByRole("navigation", { name: "Filter posts by category" });
-    await filter.getByRole("link", { name: "Design" }).click();
-    await expect(page).toHaveURL(/category=design$/);
-    await expect(cards).toHaveCount(2);
+    await filter.getByRole("link", { name: "Handover" }).click();
+    await expect(page).toHaveURL(/category=handover$/);
+    await expect(cards).toHaveCount(3);
   });
 
   test("an article shows the body, share links and related posts", async ({ page }) => {
@@ -318,11 +468,11 @@ test.describe("SEO files and structured data", () => {
     const res = await request.get("/sitemap.xml");
     expect(res.status()).toBe(200);
     const xml = await res.text();
-    expect(xml).toContain("/en/projects/courtyard-house");
+    expect(xml).toContain("/en/projects/windsor-hotel");
     expect(xml).toContain("/bn/journal/");
     expect(xml).toContain('hreflang="bn"');
-    // 7 static pages + 8 projects + 6 posts, each in 2 locales
-    expect((xml.match(/<loc>/g) ?? []).length).toBe((7 + 8 + 6) * 2);
+    // 7 static pages + 25 projects + 6 posts, each in 2 locales
+    expect((xml.match(/<loc>/g) ?? []).length).toBe((7 + 25 + 6) * 2);
   });
 
   test("robots.txt points at the sitemap", async ({ request }) => {
@@ -343,7 +493,7 @@ test.describe("SEO files and structured data", () => {
   test("project pages have CreativeWork and journal posts have Article JSON-LD", async ({
     page,
   }) => {
-    await page.goto("/en/projects/courtyard-house");
+    await page.goto("/en/projects/windsor-hotel");
     const work = JSON.parse(
       (await page.locator('script[type="application/ld+json"]').first().textContent()) ?? "{}",
     );
@@ -357,7 +507,7 @@ test.describe("SEO files and structured data", () => {
   });
 
   test("OG images render as PNGs", async ({ request }) => {
-    for (const url of ["/en/opengraph-image", "/en/projects/courtyard-house/opengraph-image"]) {
+    for (const url of ["/en/opengraph-image", "/en/projects/windsor-hotel/opengraph-image"]) {
       const res = await request.get(url);
       expect(res.status()).toBe(200);
       expect(res.headers()["content-type"]).toContain("image/png");
@@ -380,7 +530,7 @@ test.describe("home page content", () => {
       "Why clients choose us",
       "Selected work",
       "Nine disciplines, one studio.",
-      "Clients who came back to build again.",
+      "Trusted by clients across Sylhet.",
       "Notes from the studio and the site",
       "Bring your vision to life.",
     ]) {

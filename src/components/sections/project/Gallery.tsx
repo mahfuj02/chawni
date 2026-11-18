@@ -2,23 +2,23 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { LazyPhoto } from "@/components/ui/LazyPhoto";
 import type { KeyboardEvent } from "react";
-import { PlaceholderImage } from "@/components/ui";
-import type { ImageRef } from "@/content/types";
-import { pick } from "@/lib/localized";
+import type { ProjectImage } from "@/content/types";
 import { pad2 } from "@/lib/utils";
 
 interface GalleryProps {
-  images: ImageRef[];
+  images: ProjectImage[];
   /** Index of the open photo, or null when closed. Owned by the parent so 3D hotspots can open it. */
   openIndex: number | null;
   onOpenChange: (index: number | null) => void;
 }
 
+/** Masonry-style grid of 1200 px photos (natural aspect ratios) plus a lightbox with a counter. */
 export function Gallery({ images, openIndex, onOpenChange }: GalleryProps) {
   const t = useTranslations("projectDetail");
-  const locale = useLocale();
   const total = images.length;
   const open = openIndex !== null;
   const current = openIndex !== null ? images[openIndex] : null;
@@ -38,25 +38,24 @@ export function Gallery({ images, openIndex, onOpenChange }: GalleryProps) {
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+      <ul className="columns-2 gap-3 md:columns-3 md:gap-4">
         {images.map((img, i) => (
-          <li key={i}>
+          <li key={img.src} className="mb-3 break-inside-avoid md:mb-4">
             <button
               type="button"
               onClick={() => onOpenChange(i)}
               aria-haspopup="dialog"
               title={t("openPhoto", { number: i + 1, total })}
-              className="group block w-full overflow-hidden rounded-card text-start"
+              className="group block w-full overflow-hidden rounded-card bg-placeholder text-start"
             >
-              <span className="block transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]">
-                <PlaceholderImage
-                  caption={img.caption}
-                  aspect="4/3"
-                  src={img.src}
-                  alt={pick(img.alt, locale)}
-                  sizes="(min-width: 768px) 33vw, 50vw"
-                />
-              </span>
+              <LazyPhoto
+                src={img.thumb}
+                alt={img.alt}
+                aspect={`${img.width}/${img.height}`}
+                sizes="(min-width: 1280px) 420px, (min-width: 768px) 33vw, 50vw"
+                blur={img.blur}
+                imageClassName="transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]"
+              />
             </button>
           </li>
         ))}
@@ -84,22 +83,18 @@ export function Gallery({ images, openIndex, onOpenChange }: GalleryProps) {
               </Dialog.Close>
             </div>
 
-            <div className="flex min-h-0 flex-1 items-center justify-center">
+            {/* The frame fills the free height; the photo is contained, never cropped or covering controls. */}
+            <div className="relative min-h-0 flex-1">
               {current && (
-                // Width is also capped by the available height, so the photo never covers the controls.
-                <div
-                  className="w-full max-w-6xl"
-                  style={{ width: "min(100%, calc((100dvh - 13rem) * 16 / 9))" }}
-                >
-                  <PlaceholderImage
-                    caption={current.caption}
-                    aspect="16/9"
-                    src={current.src}
-                    alt={pick(current.alt, locale)}
-                    sizes="100vw"
-                    priority
-                  />
-                </div>
+                <Image
+                  key={current.src}
+                  src={current.src}
+                  alt={current.alt}
+                  fill
+                  sizes="100vw"
+                  priority
+                  className="object-contain"
+                />
               )}
             </div>
 

@@ -1,6 +1,7 @@
 import { company } from "@/content";
 import type { JournalPost, Project } from "@/content/types";
 import { pick } from "@/lib/localized";
+import { projectTitle } from "@/lib/project-text";
 import { SITE_NAME, absoluteUrl, localizedPath } from "@/lib/seo";
 
 const CONTEXT = "https://schema.org";
@@ -27,7 +28,7 @@ export function organizationJsonLd(locale: string) {
         name: SITE_NAME,
         url,
         image: absoluteUrl("/brand/icon-512.png"),
-        telephone: company.phone,
+        telephone: [...company.phones],
         email: company.email,
         address: {
           "@type": "PostalAddress",
@@ -39,26 +40,26 @@ export function organizationJsonLd(locale: string) {
           latitude: company.geo.latitude,
           longitude: company.geo.longitude,
         },
-        openingHours: "Sa-Th 09:00-18:00",
         parentOrganization: { "@id": `${absoluteUrl("/")}#organization` },
       },
     ],
   };
 }
 
-/** CreativeWork for a project page. */
+/** CreativeWork for a project page, with the real cover photo. */
 export function projectJsonLd(project: Project, locale: string) {
   return {
     "@context": CONTEXT,
     "@type": "CreativeWork",
-    name: pick(project.title, locale),
-    description: pick(project.summary, locale),
+    name: projectTitle(project, locale),
+    description: project.summary,
     url: absoluteUrl(localizedPath(locale, `/projects/${project.slug}`)),
     inLanguage: locale,
-    dateCreated: String(project.year),
-    locationCreated: { "@type": "Place", name: pick(project.location, locale) },
+    ...(project.year ? { dateCreated: project.year } : {}),
+    locationCreated: { "@type": "Place", name: project.location },
     creator: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
-    ...(project.hero.src ? { image: absoluteUrl(project.hero.src) } : {}),
+    image: absoluteUrl(project.cover),
+    genre: project.category,
   };
 }
 
@@ -80,6 +81,6 @@ export function articleJsonLd(post: JournalPost, locale: string) {
       name: SITE_NAME,
       logo: { "@type": "ImageObject", url: absoluteUrl("/brand/icon-512.png") },
     },
-    ...(post.cover.startsWith("/") ? { image: absoluteUrl(post.cover) } : {}),
+    image: absoluteUrl(post.cover),
   };
 }

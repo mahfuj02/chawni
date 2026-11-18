@@ -1,6 +1,6 @@
 {
   "name": "chawni-architectures",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "analyze": "node scripts/analyze.mjs",
     "prepare": "husky",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "content:blur": "node scripts/generate-blur.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
@@ -64,6 +65,7 @@
     "lint-staged": "^17.6.1",
     "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "sharp": "^0.35.5",
     "tailwindcss": "4.3.3",
     "typescript": "^5",
     "vitest": "^5.1.0"

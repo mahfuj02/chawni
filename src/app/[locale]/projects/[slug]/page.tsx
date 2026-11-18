@@ -1,17 +1,16 @@
-import { ArrowLeft, ArrowUpRight, Quote } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ProjectMedia } from "@/components/sections/project/ProjectMedia";
-import { Container, PlaceholderImage, SectionLabel } from "@/components/ui";
-import { hasModel } from "@/content";
+import { Container, Photo, SectionLabel, StatusBadge } from "@/components/ui";
+import { STATUS_KEY, categorySlug } from "@/content/types";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getContentSource } from "@/lib/content-source";
-import { formatNumber } from "@/lib/format";
 import { projectJsonLd } from "@/lib/jsonld";
-import { pick } from "@/lib/localized";
+import { projectTitle } from "@/lib/project-text";
 import { pageMetadata } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -30,8 +29,9 @@ export async function generateMetadata({
   return pageMetadata({
     locale,
     path: `/projects/${slug}`,
-    title: pick(project.title, locale),
-    description: pick(project.summary, locale),
+    title: projectTitle(project, locale),
+    description: project.summary,
+    // The real cover photo becomes the social card (see opengraph-image.tsx).
   });
 }
 
@@ -46,19 +46,15 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
   const t = await getTranslations("projectDetail");
   const tp = await getTranslations("projectsPage");
 
+  // Only the facts that exist are shown.
   const facts = [
-    { label: t("location"), value: pick(project.location, locale) },
-    { label: t("client"), value: pick(project.client, locale) },
-    { label: t("size"), value: t("sqft", { value: formatNumber(project.sizeSqft, locale) }) },
-    { label: t("scope"), value: pick(project.scope, locale) },
-    {
-      label: t("completed"),
-      value:
-        project.status === "ongoing"
-          ? t("ongoing")
-          : formatNumber(project.year, locale).replace(/,/g, ""),
-    },
-  ];
+    { label: t("location"), value: project.location },
+    { label: t("client"), value: project.client },
+    { label: t("area"), value: project.area },
+    { label: t("year"), value: project.year },
+    { label: t("scope"), value: project.scope },
+  ].filter((f): f is { label: string; value: string } => Boolean(f.value));
+  const cover = project.images.find((i) => i.src === project.cover) ?? project.images[0];
 
   return (
     <>
@@ -72,21 +68,24 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
             <ArrowLeft aria-hidden="true" className="size-4" />
             {t("back")}
           </Link>
-          <SectionLabel>{tp(project.category)}</SectionLabel>
-          <h1 className="max-w-5xl text-display">{pick(project.title, locale)}</h1>
+          <SectionLabel>{tp(categorySlug(project.category))}</SectionLabel>
+          <h1 className="max-w-5xl text-display">{projectTitle(project, locale)}</h1>
         </Container>
       </section>
 
       <Container>
-        <PlaceholderImage
-          caption={project.hero.caption}
-          aspect="16/9"
-          src={project.hero.src}
-          alt={pick(project.hero.alt, locale)}
-          sizes="100vw"
-          priority
-        />
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-6 border-b border-line py-8 md:grid-cols-3 lg:grid-cols-5">
+        <div className="relative">
+          <Photo
+            src={cover.src}
+            alt={cover.alt}
+            blur={cover.blur}
+            aspect="16/9"
+            sizes="(min-width: 1440px) 1296px, 100vw"
+            priority
+          />
+          <StatusBadge status={project.status} className="absolute top-4 left-4 z-10" />
+        </div>
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-6 border-b border-line py-8 md:grid-cols-3 lg:grid-cols-6">
           {facts.map((f) => (
             <div key={f.label} className="flex flex-col gap-1">
               <dt className="text-label font-medium tracking-wide text-muted uppercase">
@@ -95,35 +94,30 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
               <dd className="font-medium">{f.value}</dd>
             </div>
           ))}
+          <div className="flex flex-col gap-1">
+            <dt className="text-label font-medium tracking-wide text-muted uppercase">
+              {t("status")}
+            </dt>
+            <dd className="font-medium">{tp(`status.${STATUS_KEY[project.status]}`)}</dd>
+          </div>
         </dl>
       </Container>
 
-      <section aria-label={`${t("brief")} / ${t("solution")}`} className="section-y">
-        <Container className="grid gap-12 md:grid-cols-2 md:gap-20">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-h3">{t("brief")}</h2>
-            <p className="text-muted">{pick(project.brief, locale)}</p>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h2 className="text-h3">{t("solution")}</h2>
-            <p className="text-muted">{pick(project.solution, locale)}</p>
-          </div>
-        </Container>
-      </section>
-
-      <ProjectMedia project={project} showModel={hasModel(project)} />
-
-      <section aria-label={t("quote")} className="section-y bg-mist">
+      <section aria-label={t("about")} className="section-y">
         <Container>
-          <figure className="flex max-w-4xl flex-col gap-6">
-            <Quote aria-hidden="true" className="size-10 text-orange" strokeWidth={1.5} />
-            <blockquote className="font-heading text-[clamp(1.5rem,1.1rem+1.6vw,2.5rem)] leading-snug font-semibold">
-              {pick(project.quote.text, locale)}
-            </blockquote>
-            <figcaption className="text-muted">{pick(project.quote.author, locale)}</figcaption>
-          </figure>
+          <p className="max-w-3xl text-[clamp(1.25rem,1.05rem+0.9vw,1.75rem)] leading-snug">
+            {project.summary}
+          </p>
+          {locale === "bn" && <p className="mt-4 text-small text-muted">{t("englishOnly")}</p>}
         </Container>
       </section>
+
+      <ProjectMedia
+        images={project.images}
+        modelUrl={project.modelUrl}
+        hotspots={project.hotspots}
+        photoCredit={project.photoCredit}
+      />
 
       {next && (
         <section aria-label={t("nextProject")} className="on-dark bg-ink text-white">
@@ -136,7 +130,7 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
                 <span className="text-label font-medium tracking-wide text-white/70 uppercase">
                   {t("nextProject")}
                 </span>
-                <span className="text-h2">{pick(next.title, locale)}</span>
+                <span className="text-h2">{projectTitle(next, locale)}</span>
               </span>
               <ArrowUpRight
                 aria-hidden="true"

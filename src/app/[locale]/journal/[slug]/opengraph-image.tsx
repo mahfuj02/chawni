@@ -17,5 +17,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   return renderOgImage({
     title: post?.title.en ?? "Journal",
     kicker: post ? `journal · ${post.category}` : "journal",
+    photo: post?.cover,
   });
 }

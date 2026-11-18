@@ -4,20 +4,27 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ProjectModelViewer } from "@/components/three/ProjectModelViewer";
 import { Container, SectionLabel } from "@/components/ui";
-import type { Project } from "@/content/types";
+import type { ProjectHotspot, ProjectImage } from "@/content/types";
 import { Gallery } from "./Gallery";
 
+interface ProjectMediaProps {
+  images: ProjectImage[];
+  modelUrl?: string;
+  hotspots?: ProjectHotspot[];
+  photoCredit?: string;
+}
+
 /**
- * "Explore in 3D" (when a model exists) plus the photo gallery. They share one lightbox
- * so a hotspot in the 3D view can open the matching photo.
+ * "Explore in 3D" (only when the project has a model) plus the photo gallery. They share one
+ * lightbox so a hotspot in the 3D view opens its photo.
  */
-export function ProjectMedia({ project, showModel }: { project: Project; showModel: boolean }) {
+export function ProjectMedia({ images, modelUrl, hotspots = [], photoCredit }: ProjectMediaProps) {
   const t = useTranslations("projectDetail");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <>
-      {showModel && (
+      {modelUrl && (
         <section aria-labelledby="explore-heading" className="on-dark section-y bg-ink text-white">
           <Container className="flex flex-col gap-10">
             <div className="flex max-w-3xl flex-col gap-6">
@@ -28,13 +35,12 @@ export function ProjectMedia({ project, showModel }: { project: Project; showMod
               <p className="text-white/75">{t("explore.text")}</p>
             </div>
             <ProjectModelViewer
-              modelUrl={project.modelUrl}
-              hotspots={project.gallery.map((g) => g.caption)}
+              modelUrl={modelUrl}
+              hotspots={hotspots}
+              poster={{ src: images[0].thumb, alt: images[0].alt, blur: images[0].blur }}
               onHotspot={setOpenIndex}
             />
-            {!project.modelUrl && (
-              <p className="text-small text-white/60">{t("explore.demoNote")}</p>
-            )}
+            <p className="text-small text-white/60">{t("explore.massingNote")}</p>
           </Container>
         </section>
       )}
@@ -44,7 +50,10 @@ export function ProjectMedia({ project, showModel }: { project: Project; showMod
           <h2 id="gallery-heading" className="text-h2">
             {t("gallery")}
           </h2>
-          <Gallery images={project.gallery} openIndex={openIndex} onOpenChange={setOpenIndex} />
+          <Gallery images={images} openIndex={openIndex} onOpenChange={setOpenIndex} />
+          {photoCredit && (
+            <p className="text-small text-muted">{t("photoCredit", { name: photoCredit })}</p>
+          )}
         </Container>
       </section>
     </>

@@ -2,6 +2,7 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import { getBlur } from "@/lib/blur";
 import { JOURNAL_CATEGORIES, type JournalCategory, type JournalPost } from "@/content/types";
 
 const JOURNAL_DIR = path.join(process.cwd(), "content", "journal");
@@ -21,6 +22,8 @@ function toPost(slug: string, raw: string): JournalPost {
     excerpt: { en: String(data.excerpt ?? ""), bn: String(data.excerpt_bn ?? data.excerpt ?? "") },
     cover: String(data.cover ?? ""),
     author: String(data.author ?? ""),
+    coverBlur: getBlur(String(data.cover ?? "")),
+    review: data.review === true,
     body: content,
   };
 }

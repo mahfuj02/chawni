@@ -14,8 +14,10 @@ export async function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = await getContentSource().getProject(slug);
+  const cover = project?.images.find((i) => i.src === project.cover) ?? project?.images[0];
   return renderOgImage({
-    title: project?.title.en ?? "Project",
-    kicker: project ? `${project.category} · ${project.location.en}` : "projects",
+    title: project?.title ?? "Project",
+    kicker: project ? `${project.category} · ${project.location}` : "projects",
+    photo: cover?.thumb,
   });
 }

@@ -1,12 +1,12 @@
-import { PROJECT_CATEGORIES, JOURNAL_CATEGORIES } from "@/content/types";
+import { JOURNAL_CATEGORIES, PROJECT_CATEGORIES, categorySlug } from "@/content/types";
 import type { JournalCategory, ProjectCategory } from "@/content/types";
 
-/** Parse `?category=` into a valid project category, or undefined for "All". */
+/** Parse `?category=` ("residential", "hospitality"...) into a category, or undefined for "All". */
 export function parseProjectCategory(
   value: string | string[] | undefined,
 ): ProjectCategory | undefined {
   const v = Array.isArray(value) ? value[0] : value;
-  return PROJECT_CATEGORIES.find((c) => c === v);
+  return PROJECT_CATEGORIES.find((c) => categorySlug(c) === v);
 }
 
 /** Journal category slugs in the URL are lowercase, hyphenated: "site-update". */

@@ -38,12 +38,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   setRequestLocale(locale);
 
   const content = getContentSource();
-  const [stats, phases, featured, leaders, disciplines, testimonials, clients, posts] =
+  const [stats, phases, featured, team, disciplines, testimonials, clients, posts] =
     await Promise.all([
       content.getStats(),
       content.getPhases(),
-      content.getFeaturedProjects(3),
-      content.getLeaders(),
+      content.getFeaturedProjects(),
+      content.getTeam(),
       content.getDisciplines(),
       content.getTestimonials(),
       content.getClients(),
@@ -58,7 +58,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <WhatWeDo phases={phases} />
       <WhyChawni />
       <FeaturedProjects projects={featured} />
-      <TeamSection leaders={leaders.slice(0, 3)} disciplines={disciplines} />
+      {/* Home shows the members who have a photo. */}
+      <TeamSection members={team.filter((m) => m.photo)} disciplines={disciplines} />
       <TrustedBy testimonial={testimonials[0]} clients={clients} />
       <JournalPreview posts={posts.slice(0, 3)} />
       <CtaBand />

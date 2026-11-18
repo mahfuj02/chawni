@@ -10,20 +10,26 @@ import {
 } from "@/lib/filters";
 
 describe("parseProjectCategory", () => {
-  it("accepts every known category", () => {
-    for (const c of ["residential", "commercial", "interior", "construction"]) {
-      expect(parseProjectCategory(c)).toBe(c);
-    }
+  it("accepts the slug of every known category", () => {
+    expect(parseProjectCategory("residential")).toBe("Residential");
+    expect(parseProjectCategory("commercial")).toBe("Commercial");
+    expect(parseProjectCategory("hospitality")).toBe("Hospitality");
+    expect(parseProjectCategory("interior")).toBe("Interior");
+    expect(parseProjectCategory("institutional")).toBe("Institutional");
+  });
+
+  it("no longer accepts the old dummy category", () => {
+    expect(parseProjectCategory("construction")).toBeUndefined();
   });
 
   it("returns undefined for unknown, empty or missing values (meaning 'All')", () => {
-    expect(parseProjectCategory("hospitality")).toBeUndefined();
+    expect(parseProjectCategory("spaceships")).toBeUndefined();
     expect(parseProjectCategory("")).toBeUndefined();
     expect(parseProjectCategory(undefined)).toBeUndefined();
   });
 
   it("uses the first value when the param is repeated", () => {
-    expect(parseProjectCategory(["interior", "commercial"])).toBe("interior");
+    expect(parseProjectCategory(["interior", "commercial"])).toBe("Interior");
   });
 
   it("is case sensitive so URLs stay canonical", () => {

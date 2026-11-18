@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 import { ArrowLink, Container, Reveal, SectionLabel } from "@/components/ui";
-import type { Project } from "@/content/types";
+import type { ProjectCardData } from "@/content/types";
 import { ProjectCard } from "../ProjectCard";
 
-export function FeaturedProjects({ projects }: { projects: Project[] }) {
+export function FeaturedProjects({ projects }: { projects: ProjectCardData[] }) {
   const t = useTranslations("projectsSection");
 
   return (

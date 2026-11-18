@@ -2,11 +2,32 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { PageHero } from "@/components/sections/PageHero";
-import { Card, Container, PlaceholderImage, Reveal, SectionLabel } from "@/components/ui";
+import { Card, Container, Photo, Reveal, SectionLabel } from "@/components/ui";
+import { getBlur } from "@/lib/blur";
 import { getContentSource } from "@/lib/content-source";
 import { pick } from "@/lib/localized";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+
+/** One real photo per phase (1200 px web versions). */
+const PHASE_PHOTOS = {
+  plan: {
+    src: "/projects/chawni-studio/chawni-studio-02-1200.jpg",
+    alt: "The Chawni studio, where every project starts",
+  },
+  design: {
+    src: "/projects/samriddhi/samriddhi-01-1200.jpg",
+    alt: "Samriddhi residence, a design by Chawni",
+  },
+  engineer: {
+    src: "/projects/dr-arafat-palace/dr-arafat-palace-01-1200.jpg",
+    alt: "Dr Arafat Palace, architecture and structure",
+  },
+  build: {
+    src: "/projects/windsor-hotel/windsor-hotel-02-1200.jpg",
+    alt: "Windsor Hotel interior, designed and executed by Chawni",
+  },
+} as const;
 
 export async function generateMetadata({
   params,
@@ -52,10 +73,11 @@ export default async function ServicesPage({ params }: PageProps<"/[locale]/serv
                 className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20"
               >
                 <Reveal className={cn(flip && "lg:order-2")}>
-                  <PlaceholderImage
-                    caption={`${p.number} · ${p.title.en.toUpperCase()}`}
+                  <Photo
+                    src={PHASE_PHOTOS[p.key].src}
+                    blur={getBlur(PHASE_PHOTOS[p.key].src)}
                     aspect="4/3"
-                    alt={`${pick(p.title, locale)} (placeholder)`}
+                    alt={PHASE_PHOTOS[p.key].alt}
                     sizes="(min-width: 1024px) 50vw, 100vw"
                   />
                 </Reveal>
