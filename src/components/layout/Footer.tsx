@@ -79,7 +79,7 @@ export function Footer() {
 
         <div className="mt-16 flex flex-col gap-3 border-t border-white/15 pt-8 text-sm text-white/70 md:flex-row md:items-center md:justify-between">
           <p>
-            © {year} {company.name}. {t("rights")}
+            © {year} {locale === "bn" ? t("name") : company.name}. {t("rights")}
           </p>
           <p>
             {t("licences", {

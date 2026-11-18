@@ -69,7 +69,14 @@ export default async function JournalPostPage({ params }: PageProps<"/[locale]/j
             <h1 className="text-h2">{title}</h1>
             <p className="flex flex-wrap gap-x-4 text-small text-muted">
               <time dateTime={post.date}>{formatDate(post.date, locale)}</time>
-              <span>{t("by", { author: post.author })}</span>
+              <span>
+                {t("by", {
+                  author:
+                    locale === "bn" && post.author === "Chawni team"
+                      ? t("teamAuthor")
+                      : post.author,
+                })}
+              </span>
             </p>
           </Container>
         </header>
