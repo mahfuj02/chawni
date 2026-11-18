@@ -133,3 +133,16 @@ To add or replace a slide:
 5. Check on a wide screen and a phone that the subject stays visible: that is what the focus values are for.
 
 Keep the slideshow to a handful of slides: the others are preloaded in the background.
+
+## The Home "what we do" sequence
+
+The dark section on Home shows four frames, one per phase: `public/what-we-do/plan.svg` (Plan), then
+photos from Samriddhi (Design render), Dr Arafat Palace (Engineer, with an orange structural grid drawn
+over it) and Windsor Hotel (Build, completed). They are stand-ins taken from different projects, listed in
+`src/content/what-we-do.ts`.
+
+**When real plans and site photos exist for one project, replace these four frames with that single
+project's real journey:** its plan drawing, its 3D render, a structural drawing or photo, and its
+completed photo. Edit `WHAT_WE_DO_FRAMES` (image path, `projectSlug`). If you replace the plan, keep the
+named groups `walls`, `openings`, `glazing`, `grid`, `columns`, `dims`, then regenerate
+`src/content/plan-markup.ts` from the new SVG (the draw-in animation targets those group ids).

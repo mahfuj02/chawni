@@ -2,18 +2,21 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { PhaseScene } from "@/components/three/PhaseScene";
 import { Container, SectionLabel } from "@/components/ui";
+import { useMediaQuery } from "@/components/three/useSceneGate";
 import type { Phase } from "@/content/types";
 import { getLenis } from "@/lib/lenis";
 import { pick } from "@/lib/localized";
 import { cn } from "@/lib/utils";
+import { StaticFrame, WhatWeDoStage, type StageFrame } from "./WhatWeDoStage";
 
 /**
- * Dark "what we do" section. The 3D panel stays pinned (CSS sticky) while the four
- * phases scroll past; chips and scroll position stay in sync both ways.
+ * Dark "what we do" section. A 4:3 frame stays pinned (CSS sticky) while the four phases scroll past and
+ * changes with the active phase; chips and scroll position stay in sync both ways. On phones and with
+ * reduced motion nothing is pinned or animated: each phase shows its own frame under its text.
  */
-export function WhatWeDo({ phases }: { phases: Phase[] }) {
+export function WhatWeDo({ phases, frames }: { phases: Phase[]; frames: StageFrame[] }) {
+  const reduce = useMediaQuery("(prefers-reduced-motion: reduce)");
   const t = useTranslations("what");
   const locale = useLocale();
   const [active, setActive] = useState(0);
@@ -41,8 +44,6 @@ export function WhatWeDo({ phases }: { phases: Phase[] }) {
     else el.scrollIntoView({ behavior: "auto", block: "center" });
   }
 
-  const current = phases[active] ?? phases[0];
-
   return (
     <section aria-labelledby="what-heading" className="on-dark section-y bg-ink text-white">
       <Container>
@@ -54,9 +55,16 @@ export function WhatWeDo({ phases }: { phases: Phase[] }) {
           <p className="text-white/75">{t("text")}</p>
         </div>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-16">
-          {/* Pinned panel: chips + scene */}
-          <div className="sticky top-[var(--header-h)] z-10 bg-ink py-3 lg:top-[calc(var(--header-h)+16px)] lg:col-start-2 lg:row-start-1 lg:self-start lg:py-6">
+        <div className={cn("flex flex-col", !reduce && "lg:grid lg:grid-cols-2 lg:gap-16")}>
+          {/* Chips (sticky), plus the pinned frame on wide screens */}
+          <div
+            className={cn(
+              "sticky top-[var(--header-h)] z-10 bg-ink py-3",
+              reduce
+                ? "static"
+                : "lg:top-[calc(var(--header-h)+16px)] lg:col-start-2 lg:row-start-1 lg:self-start lg:py-6",
+            )}
+          >
             <nav aria-label={t("phasesNav")}>
               <ul className="mb-4 flex flex-wrap gap-2">
                 {phases.map((p, i) => (
@@ -79,13 +87,15 @@ export function WhatWeDo({ phases }: { phases: Phase[] }) {
                 ))}
               </ul>
             </nav>
-            <div className="aspect-[16/10] max-h-[38vh] w-full overflow-hidden rounded-card bg-dark-2 lg:aspect-[4/3] lg:max-h-none">
-              <PhaseScene phase={current.key} title={t("sceneLabel")} />
-            </div>
+            {!reduce && (
+              <div className="hidden lg:block">
+                <WhatWeDoStage frames={frames} active={active} />
+              </div>
+            )}
           </div>
 
           {/* Phases */}
-          <ol className="lg:col-start-1 lg:row-start-1">
+          <ol className={cn(!reduce && "lg:col-start-1 lg:row-start-1")}>
             {phases.map((p, i) => (
               <li
                 key={p.key}
@@ -93,7 +103,10 @@ export function WhatWeDo({ phases }: { phases: Phase[] }) {
                   refs.current[i] = el;
                 }}
                 data-index={i}
-                className="flex min-h-[55vh] flex-col justify-center gap-5 border-t border-white/15 py-12 lg:min-h-[75vh]"
+                className={cn(
+                  "flex flex-col justify-center gap-5 border-t border-white/15 py-12",
+                  reduce ? "min-h-0" : "min-h-[55vh] lg:min-h-[75vh]",
+                )}
               >
                 <span className="font-heading text-[clamp(3.5rem,2rem+5vw,6rem)] leading-none font-semibold text-orange">
                   {p.number}
@@ -108,6 +121,9 @@ export function WhatWeDo({ phases }: { phases: Phase[] }) {
                     </li>
                   ))}
                 </ul>
+                <div className={cn("mt-4 w-full", !reduce && "lg:hidden")}>
+                  <StaticFrame frame={frames[i]} />
+                </div>
               </li>
             ))}
           </ol>

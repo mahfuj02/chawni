@@ -11,6 +11,8 @@ import { TeamSection } from "@/components/sections/home/TeamSection";
 import { TrustedBy } from "@/components/sections/home/TrustedBy";
 import { WhoWeAre } from "@/components/sections/home/WhoWeAre";
 import { WhyChawni } from "@/components/sections/home/WhyChawni";
+import type { StageFrame } from "@/components/sections/home/WhatWeDoStage";
+import { WHAT_WE_DO_FRAMES } from "@/content/what-we-do";
 import { getContentSource } from "@/lib/content-source";
 import { organizationJsonLd } from "@/lib/jsonld";
 import { pageMetadata } from "@/lib/seo";
@@ -51,13 +53,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       content.getPosts(),
     ]);
 
+  const tf = await getTranslations({ locale, namespace: "what.frames" });
+  const projects = await content.getProjects();
+  const frames: StageFrame[] = WHAT_WE_DO_FRAMES.map((fr) => {
+    const p = fr.projectSlug ? projects.find((x) => x.slug === fr.projectSlug) : undefined;
+    const project = p ? (locale === "bn" && p.titleBn ? p.titleBn : p.title) : "";
+    return {
+      kind: fr.kind,
+      image: fr.image,
+      alt: tf(`${fr.kind}.alt`, { project }),
+      caption: tf(`${fr.kind}.caption`, { project }),
+      href: p ? `/projects/${p.slug}` : undefined,
+      badge: fr.kind === "completed" ? tf("completed.badge", { project }) : undefined,
+    };
+  });
+
   return (
     <>
       <JsonLd data={organizationJsonLd(locale)} />
       <Intro locale={locale} />
       <Hero locale={locale} />
       <WhoWeAre stats={stats} />
-      <WhatWeDo phases={phases} />
+      <WhatWeDo phases={phases} frames={frames} />
       <WhyChawni />
       <FeaturedProjects projects={featured} />
       {/* Home shows the members who have a photo. */}
