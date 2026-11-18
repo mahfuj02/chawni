@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+import { LazyPhoto } from "@/components/ui/LazyPhoto";
 import type { TeamMemberCardData } from "@/content/types";
 
 /** Black-and-white portrait at 4:5, or an initials tile when there is no photo yet. */
@@ -11,14 +11,13 @@ export function TeamCard({ member }: { member: TeamMemberCardData }) {
     <article className="flex flex-col gap-4">
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-card bg-mist">
         {member.photo ? (
-          <Image
+          <LazyPhoto
             src={member.photo}
             alt={member.name}
-            fill
+            aspect="4/5"
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
-            placeholder={member.photoBlur ? "blur" : "empty"}
-            blurDataURL={member.photoBlur}
-            className="object-cover"
+            blur={member.photoBlur}
+            className="absolute inset-0 h-full"
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-placeholder">

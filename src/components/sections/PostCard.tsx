@@ -1,5 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
-import { Photo } from "@/components/ui";
+import { LazyPhoto } from "@/components/ui/LazyPhoto";
 import type { JournalPost } from "@/content/types";
 import { Link } from "@/i18n/navigation";
 import { JOURNAL_CATEGORY_KEY } from "@/lib/filters";
@@ -24,7 +24,7 @@ export function PostCard({
     <article className="group relative flex flex-col gap-5">
       <div className="overflow-hidden rounded-card">
         <div className="transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]">
-          <Photo
+          <LazyPhoto
             src={post.cover}
             blur={post.coverBlur}
             aspect={featured ? "16/9" : "3/2"}

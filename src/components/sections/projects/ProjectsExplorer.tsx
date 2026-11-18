@@ -65,9 +65,9 @@ export function ProjectsView({
 
       {visible.length > 0 ? (
         <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
-          {visible.map((p) => (
+          {visible.map((p, i) => (
             <li key={p.slug}>
-              <ProjectCard project={p} headingLevel="h2" />
+              <ProjectCard project={p} headingLevel="h2" priority={i < 2} />
             </li>
           ))}
         </ul>

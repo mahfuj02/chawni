@@ -7,6 +7,7 @@ export { Container } from "./Container";
 export { Heading } from "./Heading";
 export { LanguageSwitcher } from "./LanguageSwitcher";
 export { Logo, logoSrc, type LogoVariant } from "./Logo";
+export { LazyPhoto } from "./LazyPhoto";
 export { Photo } from "./Photo";
 export { PlaceholderImage } from "./PlaceholderImage";
 export { Reveal } from "./Reveal";

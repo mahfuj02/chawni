@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
+import { LazyPhoto } from "@/components/ui/LazyPhoto";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { categorySlug, type ProjectCardData } from "@/content/types";
 import { Link } from "@/i18n/navigation";
@@ -23,16 +23,16 @@ export function ProjectCard({
 
   return (
     <article className="group relative flex flex-col gap-5">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-card bg-placeholder">
-        <Image
+      <div className="relative">
+        <LazyPhoto
           src={cover.thumb}
           alt={cover.alt}
-          fill
+          aspect="4/3"
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          placeholder={cover.blur ? "blur" : "empty"}
-          blurDataURL={cover.blur}
-          priority={priority}
-          className="object-cover transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]"
+          blur={cover.blur}
+          eager={priority}
+          className="rounded-card"
+          imageClassName="transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]"
         />
         <StatusBadge status={project.status} className="absolute top-3 left-3 z-10" />
       </div>

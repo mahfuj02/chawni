@@ -293,6 +293,8 @@ test.describe("about and team", () => {
   }) => {
     await page.goto("/en/about");
     const members = page.locator("#leadership article");
+    // Portraits load lazily, so bring the grid into view first.
+    await members.last().scrollIntoViewIfNeeded();
     await expect(members).toHaveCount(6);
     await expect(members.getByText("Co-founder")).toHaveCount(2);
     await expect(members.getByText("Photo coming soon")).toHaveCount(2);

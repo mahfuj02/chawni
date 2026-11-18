@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { LazyPhoto } from "@/components/ui/LazyPhoto";
 import type { KeyboardEvent } from "react";
 import type { ProjectImage } from "@/content/types";
 import { pad2 } from "@/lib/utils";
@@ -47,15 +48,13 @@ export function Gallery({ images, openIndex, onOpenChange }: GalleryProps) {
               title={t("openPhoto", { number: i + 1, total })}
               className="group block w-full overflow-hidden rounded-card bg-placeholder text-start"
             >
-              <Image
+              <LazyPhoto
                 src={img.thumb}
                 alt={img.alt}
-                width={1200}
-                height={Math.round((1200 * img.height) / img.width)}
+                aspect={`${img.width}/${img.height}`}
                 sizes="(min-width: 1280px) 420px, (min-width: 768px) 33vw, 50vw"
-                placeholder={img.blur ? "blur" : "empty"}
-                blurDataURL={img.blur}
-                className="h-auto w-full transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]"
+                blur={img.blur}
+                imageClassName="transition-transform duration-700 ease-[var(--ease-out)] group-hover:scale-[1.03]"
               />
             </button>
           </li>

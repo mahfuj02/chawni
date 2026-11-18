@@ -69,8 +69,8 @@ pnpm analyze        # bundle analyzer (webpack build)
 
 ## Known limitations
 
-- **Performance score.** See the Lighthouse results in the README and `docs/DECISIONS.md`. Images are served as
-  WebP, lazy-loaded, with the 1200 px variants and blur placeholders; re-measure on the deployed site.
+- **Performance score.** Local mobile Lighthouse (simulated): Home 82–88, Projects 84–88, project detail 87–89; accessibility,
+  best practices and SEO are 100. Images are WebP, lazy and use the 1200 px variants. Re-measure on the deployed site.
 - **Bangla:** UI is translated (first pass, needs review). Project summaries, scopes, locations, roles and
   journal bodies are English only.
 - **Massing models** are built from renders, not surveys. They are labelled as such on the page.
