@@ -8,9 +8,12 @@ import { pick } from "@/lib/localized";
 export function ProjectCard({
   project,
   priority = false,
+  headingLevel: Heading = "h3",
 }: {
   project: Project;
   priority?: boolean;
+  /** Use "h2" where the card follows the page title directly (listing pages). */
+  headingLevel?: "h2" | "h3";
 }) {
   const locale = useLocale();
   const t = useTranslations("projectsPage");
@@ -35,7 +38,7 @@ export function ProjectCard({
           <p className="text-label font-medium tracking-wide text-orange-text uppercase">
             {t(project.category)}
           </p>
-          <h3 className="text-h3">
+          <Heading className="text-h3">
             {/* Stretched link: the whole card is clickable with one accessible name. */}
             <Link
               href={`/projects/${project.slug}`}
@@ -43,7 +46,7 @@ export function ProjectCard({
             >
               {title}
             </Link>
-          </h3>
+          </Heading>
           <p className="text-small text-muted">
             {pick(project.location, locale)} · {project.year}
           </p>

@@ -35,14 +35,14 @@ function JournalList({ posts }: { posts: JournalPost[] }) {
         <p className="mb-4 text-label font-medium tracking-wide text-orange-text uppercase">
           {t("featured")}
         </p>
-        <PostCard post={featured} featured />
+        <PostCard post={featured} featured headingLevel="h2" />
       </div>
 
       {visible.length > 0 && (
         <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((p) => (
             <li key={p.slug}>
-              <PostCard post={p} />
+              <PostCard post={p} headingLevel="h2" />
             </li>
           ))}
         </ul>
