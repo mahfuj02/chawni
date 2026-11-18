@@ -11,3 +11,11 @@ Newest last. Format: **date — decision** — reason.
 - **2026-11-18 — `pnpm analyze` is a Node script** instead of `ANALYZE=true …`, so it works on Windows and Linux.
 - **2026-11-18 — pnpm build scripts**: only `sharp` and `esbuild` are allowed to run install scripts (`pnpm-workspace.yaml`).
 - **2026-11-18 — CLAUDE.md in the parent Downloads folder belongs to another project (CivicTrack)** and was not applied.
+- **2026-11-18 — `loading.tsx` and `not-found.tsx` are client components** using `useTranslations`. Calling `getTranslations()` without a locale in these boundary files read request headers and silently turned every route dynamic; the client provider avoids that.
+- **2026-11-18 — Projects and Journal filters read `?category=` on the client** (`useSearchParams` inside Suspense). The pages stay statically generated and the Suspense fallback is the unfiltered list, so the static HTML is complete for crawlers, while filtered URLs are still shareable.
+- **2026-11-18 — Header logo uses the compact lockup at 68px wide**, below the 120px minimum in the brand rules, because the lockup is nearly square (1070×1090) and 120px would make an ~122px-tall header. The 120px minimum is respected everywhere else (footer 132px).
+- **2026-11-18 — Home hero does not repeat the large logo.** The header shows the light logo on the sky-blue hero (per the brief), and the hero's right side is the 3D logo scene.
+- **2026-11-18 — Journal bodies are English only.** `title_bn` and `excerpt_bn` are optional frontmatter; `/bn` article pages show an "English only" note.
+- **2026-11-18 — Journal `cover` frontmatter** is either a path under `/public` (starts with `/`) or a placeholder caption, until real photos exist.
+- **2026-11-18 — "What we do" pinning uses CSS `position: sticky`** instead of a GSAP pin, which is simpler, more robust with Lenis, and keeps GSAP out of pages that do not need it.
+- **2026-11-18 — The contact Server Action only logs inquiries** when `RESEND_API_KEY` is unset in development, or when `CONTACT_DRY_RUN=1`. In production with no key it returns an error rather than pretending to deliver.
