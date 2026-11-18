@@ -3,8 +3,12 @@
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui";
 
-/** Skeleton shown while a route segment loads. */
-export default function Loading() {
+/**
+ * Skeleton shown while a route segment loads. It is attached to leaf routes only (see
+ * docs/DECISIONS.md): a loading boundary above a route that can call notFound() makes the
+ * response stream first, which locks the HTTP status at 200 (a soft 404).
+ */
+export function PageSkeleton() {
   const t = useTranslations("common");
   return (
     <div role="status" aria-busy="true" aria-live="polite">
