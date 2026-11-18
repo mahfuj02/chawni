@@ -1,0 +1,5 @@
+const config = {
+  "*.{ts,tsx,js,jsx,mjs}": ["eslint --fix", "prettier --write"],
+  "*.{json,css,md,mdx,yml,yaml}": ["prettier --write"],
+};
+export default config;
