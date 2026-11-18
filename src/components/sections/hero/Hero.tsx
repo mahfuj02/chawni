@@ -59,41 +59,45 @@ export async function Hero({ locale }: { locale: string }) {
   );
 
   const copy = (
-    <div className="absolute bottom-[clamp(110px,16vh,170px)] left-[clamp(20px,5vw,72px)] z-10 flex max-w-[min(640px,88vw)] flex-col gap-[26px]">
-      <span
-        className="hero-rise flex items-center gap-2.5 text-[13px] font-semibold tracking-[0.12em]"
-        style={rise(0.3)}
-      >
-        <i aria-hidden="true" className="block size-2.5 bg-orange" />
-        {t("eyebrow")}
-      </span>
-      <h1 className="font-heading text-[clamp(44px,6.4vw,96px)] leading-none tracking-[-0.03em] text-white">
-        <span className="hero-rise inline-block" style={rise(0.45)}>
-          {t("title1")}
-        </span>{" "}
-        <span className="hero-rise inline-block" style={rise(0.6)}>
-          {t("title2")}
-        </span>{" "}
+    // Flex-column container: the copy sits at the bottom-left, and the top padding (header + 32px)
+    // guarantees it can never reach the header, however short the viewport is.
+    <div className="relative z-10 flex flex-1 flex-col justify-end px-[clamp(20px,5vw,72px)] pt-[calc(var(--header-h)+32px)] pb-[clamp(110px,16vh,170px)] max-md:pb-[calc(clamp(110px,16vh,170px)+48px)]">
+      <div className="flex max-w-[min(640px,88vw)] flex-col gap-[26px]">
         <span
-          className="hero-rise inline-block shadow-[inset_0_-0.16em_0_#F47C24]"
-          style={rise(0.75)}
+          className="hero-rise flex items-center gap-2.5 text-[13px] font-semibold tracking-[0.12em]"
+          style={rise(0.3)}
         >
-          {t("title3")}
+          <i aria-hidden="true" className="block size-2.5 bg-orange" />
+          {t("eyebrow")}
         </span>
-      </h1>
-      <p
-        className="hero-rise max-w-[520px] text-[clamp(16px,1.3vw,19px)] leading-[1.6] text-[#E6E8EB]"
-        style={rise(1.1)}
-      >
-        {t("description")}
-      </p>
-      <div className="hero-rise flex flex-wrap gap-3.5" style={rise(1.3)}>
-        <Link href="/projects" className={buttonStyles("primary", "lg")}>
-          {t("ctaProjects")}
-        </Link>
-        <Link href="/about" className={buttonStyles("outline-light", "lg")}>
-          {t("ctaWho")}
-        </Link>
+        <h1 className="font-heading text-[clamp(40px,min(6.4vw,9.5vh),96px)] leading-none tracking-[-0.03em] text-white">
+          <span className="hero-rise inline-block" style={rise(0.45)}>
+            {t("title1")}
+          </span>{" "}
+          <span className="hero-rise inline-block" style={rise(0.6)}>
+            {t("title2")}
+          </span>{" "}
+          <span
+            className="hero-rise inline-block shadow-[inset_0_-0.16em_0_#F47C24]"
+            style={rise(0.75)}
+          >
+            {t("title3")}
+          </span>
+        </h1>
+        <p
+          className="hero-rise max-w-[520px] text-[clamp(16px,1.3vw,19px)] leading-[1.6] text-[#E6E8EB]"
+          style={rise(1.1)}
+        >
+          {t("description")}
+        </p>
+        <div className="hero-rise flex flex-wrap gap-3.5" style={rise(1.3)}>
+          <Link href="/projects" className={buttonStyles("primary", "lg")}>
+            {t("ctaProjects")}
+          </Link>
+          <Link href="/about" className={buttonStyles("outline-light", "lg")}>
+            {t("ctaWho")}
+          </Link>
+        </div>
       </div>
     </div>
   );

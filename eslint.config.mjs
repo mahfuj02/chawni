@@ -30,6 +30,7 @@ const eslintConfig = defineConfig([
     "playwright-report/**",
     "test-results/**",
     "public/**",
+    "chawni-*/**",
     "next-env.d.ts",
   ]),
 ]);
