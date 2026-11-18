@@ -1,88 +1,43 @@
 # Handover
 
-Status of the Chawni Architectures website at **v0.1.0**.
+Status of the Chawni Architectures website at **v0.2.0** (real content).
 
 ## What is done
 
-- All pages in both languages (`/en`, `/bn`): Home, About, Services, Projects (+ detail), Journal
-  (+ article), Contact, Privacy, branded 404, error boundary, skeletons.
-- Design system, header (mobile menu), footer, WhatsApp button, smooth scroll, skip link.
-- Three lazy-loaded 3D scenes (hero logo-to-building, "what we do" phases, project "Explore in 3D"),
-  each with a static fallback.
-- SEO: metadata, canonical + hreflang, sitemap, robots, JSON-LD, generated OG images.
-- Contact form: Zod validation (browser + server), honeypot, in-memory rate limit, Resend email.
-- Quality gates: ESLint, strict TypeScript, 79 unit tests, 73 Playwright tests (including axe on
-  every route in both languages), Husky + commitlint + lint-staged, GitHub Actions CI.
+- All pages in English and Bangla: Home, About, Services, Projects (+ detail), Journal (+ article), Contact,
+  Privacy, branded 404, error boundary, skeletons.
+- **Real content (v0.2.0):** 25 projects with 269 enhanced photos, 5 categories and status badges, the real team
+  with black-and-white portraits, 12 interactive 3D massing models with photo hotspots, real phones and email,
+  six journal drafts.
+- Design system, header, footer, WhatsApp button, smooth scroll, skip link.
+- 3D: hero logo-to-building scene, "what we do" phase scene, and the project viewer (orbit, auto-rotate, explode
+  floors, hotspots that open the gallery lightbox).
+- SEO: metadata, canonical + hreflang, sitemap (all 25 projects), robots, JSON-LD, OG cards using each project's
+  cover photo.
+- Contact form: Zod validation, honeypot, in-memory rate limit, Resend email.
+- Quality: ESLint, strict TypeScript, unit tests, Playwright tests (including axe on every route in both
+  languages), Husky + commitlint + lint-staged, GitHub Actions CI. Media is tracked with Git LFS.
 
-## What is dummy (and must be replaced)
+## Still missing (needs you)
 
-Everything below is sample content. Each file is marked `// DUMMY DATA`.
+| Item                                                                                               | Where to add it                                     |
+| -------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **Office street address** (shown as "[TBC], Sylhet, Bangladesh"), then a real map embed            | `src/content/company.ts`, contact page              |
+| **Exact years and areas** for projects that have none                                              | `src/content/projects.ts` (`year`, `area`)          |
+| **Engr. Shitol Ahmed's role** (hidden while "[Role TBC]")                                          | `src/content/team.ts`                               |
+| **Photos for Mahjan Prova and Shitol Ahmed** (initials tiles are shown)                            | `public/team/`, `team.ts`, then `pnpm content:blur` |
+| **Real client logos** (text wordmarks are shown)                                                   | `src/content/clients.ts`                            |
+| **Journal review:** six drafts marked `review: true`; dates are placeholders                       | `content/journal/*.mdx`                             |
+| Confirm the hotspot for "Green boundary wall" on `duplex-akhalia` (it had no photo 3, now photo 2) | `src/content/projects.ts`                           |
+| Confirm "Engr. Masum Parvez" spelling (the slides said "Paevej") and the photo credits             | `team.ts`, `projects.ts`                            |
+| Real testimonials (none are shown), social links, opening hours                                    | `clients.ts`, `company.ts`                          |
+| Licence and IEB/IAB numbers (`[TBC]`), privacy policy text                                         | `company.ts`, `messages/*.json`                     |
+| Native review of all Bangla text; Bangla versions of project summaries                             | `messages/bn.json`, `projects.ts`                   |
 
-| Area                                     | File                          |
-| ---------------------------------------- | ----------------------------- |
-| Company name details, address, phone ... | `src/content/company.ts`      |
-| Stats (10+, 120+, 1.2M, 25)              | `src/content/stats.ts`        |
-| Phases and sectors                       | `src/content/services.ts`     |
-| 8 projects                               | `src/content/projects.ts`     |
-| Team leaders and disciplines             | `src/content/team.ts`         |
-| Clients and testimonials                 | `src/content/clients.ts`      |
-| 6 journal posts                          | `content/journal/*.mdx`       |
-| Privacy text                             | `messages/*.json` (`privacy`) |
-| Registration numbers                     | `"[TBC]"` in `company.ts`     |
-| All Bangla text                          | `messages/bn.json` + `*.ts`   |
+## How to change things
 
-All photos are **placeholders** (`PlaceholderImage`). No real photo, logo of a client, licence number,
-address, phone number or social link has been supplied yet.
-
-## Replacing content
-
-See [CONTENT_GUIDE.md](CONTENT_GUIDE.md) for the full guide. The short version:
-
-1. Edit the typed file in `src/content/` (English and Bangla side by side).
-2. Remove the `// DUMMY DATA` line once the file holds real data.
-3. Run `pnpm test` (it checks every project has 6 gallery images, translations match, etc.).
-
-### Adding real photos
-
-1. Export JPG/WebP, hero 2400×1350, gallery 1800px wide, portraits 800×1000, under ~400 KB.
-2. Copy to `public/images/projects/<slug>/01.jpg ... 06.jpg` (and `public/images/team/`, `public/images/journal/`).
-3. In the content file set `src` on the image (`hero: { src: "/images/projects/<slug>/01.jpg", ... }`, each
-   `gallery[i].src`, `leaders[i].photo.src`). Write real `alt` text in both languages.
-4. For journal posts set `cover:` in the MDX frontmatter to the path (a value starting with `/` is a path; anything
-   else is the placeholder caption).
-5. The layout does not change: `PlaceholderImage` and the real image share the same sized wrapper.
-
-### Adding a project / a journal post
-
-Copy an entry in `projects.ts` (unique `slug`), or add `content/journal/<slug>.mdx` with frontmatter
-`title`, `date`, `category` (Site update | Design | Handover | News), `excerpt`, `cover`, `author`
-(and optional `title_bn`, `excerpt_bn`).
-
-## Adding a real 3D model
-
-The project page shows a procedural demo building until a model exists.
-
-1. Export a `.glb` from SketchUp, Revit or Blender. Keep each **floor as its own top-level object**, named from
-   bottom to top, so "Explode floors" can separate them. Use metres and put the origin near the building.
-2. Compress it (usually 5–20× smaller):
-
-   ```bash
-   npx @gltf-transform/cli optimize house.glb public/models/house.glb --compress draco --texture-compress webp
-   # or --compress meshopt
-   ```
-
-   Aim for under ~5 MB. The viewer scales the model to a standard size and sits it on the ground by itself.
-
-3. Put the file in `public/models/` and set it on the project:
-
-   ```ts
-   modelUrl: "/models/house.glb",
-   ```
-
-4. When every project has its own model, set `DEMO_MODELS = false` in `src/content/projects.ts` so the
-   section only appears for projects that have a `modelUrl`.
-
-Draco decoders are self-hosted in `public/draco/`, so no third-party CDN is needed.
+See [CONTENT_GUIDE.md](CONTENT_GUIDE.md): adding a project, photo sizes and naming, `pnpm content:blur`, adding or
+replacing a 3D model (GLB conventions and compression), team, journal and translations.
 
 ## Environment variables
 
@@ -92,36 +47,33 @@ Copy `.env.example` to `.env.local` (never commit it).
 | ---------------------- | ----------------------------------------------------------------- |
 | `NEXT_PUBLIC_SITE_URL` | Real domain, **required for correct canonical URLs, sitemap, OG** |
 | `RESEND_API_KEY`       | Sends inquiry emails. Without it, production returns an error     |
-| `CONTACT_TO_EMAIL`     | Where inquiries go                                                |
+| `CONTACT_TO_EMAIL`     | Where inquiries go (set this: the default is only a placeholder)  |
 | `CONTACT_FROM_EMAIL`   | Verified sender in Resend                                         |
 | `CONTACT_DRY_RUN`      | `1` logs inquiries instead of emailing (used by the e2e tests)    |
 
 ## Deploying (Vercel)
 
-1. Import the repo, framework preset Next.js, Node 20+.
-2. Set the variables above.
-3. After the first deploy, re-run Lighthouse on the live URL (see below) and add the Google Maps embed to
-   `src/app/[locale]/contact/page.tsx` once the office address is confirmed.
+1. Import the repo (the media is in Git LFS: enable LFS in the project settings or build with `git lfs pull`).
+2. Set the variables above, Node 20+.
+3. After the first deploy, run Lighthouse on the live URL and add the Google Maps embed once the address is known.
 
 ## Commands
 
 ```bash
-pnpm dev            # develop
+pnpm dev
 pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e   # everything CI runs
+pnpm content:blur   # regenerate blur placeholders after adding photos
 pnpm analyze        # bundle analyzer (webpack build)
 ?force3d=1          # add to any URL to run 3D on a low-power device for testing
 ```
 
-Lighthouse (mobile): `pnpm dlx lighthouse@12 https://your-site/en --only-categories=performance,accessibility,best-practices,seo`.
-
 ## Known limitations
 
-- **Performance score.** Local Lighthouse runs (software GL, simulated mobile) gave Contact 81–90,
-  Projects 83–87, Home 62–79; accessibility 98–100, best practices 100, SEO 100. Observed FCP/LCP are
-  ~0.5 s; the simulated score is held back by framework JS and hydration. Re-measure on the deployed site.
-- **Bangla** is a first-pass translation and needs a native review. Journal bodies are English only.
+- **Performance score.** See the Lighthouse results in the README and `docs/DECISIONS.md`. Images are served as
+  WebP, lazy-loaded, with the 1200 px variants and blur placeholders; re-measure on the deployed site.
+- **Bangla:** UI is translated (first pass, needs review). Project summaries, scopes, locations, roles and
+  journal bodies are English only.
+- **Massing models** are built from renders, not surveys. They are labelled as such on the page.
 - **OG images** use English titles (the default OG font has no Bengali glyphs).
-- **Rate limiting** is in memory (per server instance). Use a shared store (Upstash/Redis) if abuse appears.
-- **No CMS yet.** `ContentSource` (`src/lib/content-source.ts`) is the seam: implement it for Sanity and switch
-  `getContentSource()`.
-- **Map** is a static placeholder until a real address exists.
+- **Rate limiting** is in memory. Use a shared store (Upstash/Redis) if abuse appears.
+- **No CMS yet.** `ContentSource` (`src/lib/content-source.ts`) is the seam for adding one.

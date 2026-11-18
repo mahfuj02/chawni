@@ -1,45 +1,115 @@
-# Content guide: replacing dummy data
+# Content guide
 
-Every dummy file begins with `// DUMMY DATA — replace with real content (see docs/CONTENT_GUIDE.md)`.
-Remove that line once the file holds real content.
+How to change what the site says and shows. The site is driven by typed files in `src/content/` and MDX in
+`content/journal/`. Real projects, photos, team and 3D models are already in place (v0.2.0).
 
-## Files
+## Where things live
 
-| What                         | Where                                  |
-| ---------------------------- | -------------------------------------- |
-| Company name, contact, links | `src/content/company.ts`               |
-| Stats                        | `src/content/stats.ts`                 |
-| Phases and sectors           | `src/content/services.ts`              |
-| Projects                     | `src/content/projects.ts`              |
-| Team and disciplines         | `src/content/team.ts`                  |
-| Clients, testimonials        | `src/content/clients.ts`               |
-| Journal posts                | `content/journal/*.mdx`                |
-| UI text                      | `messages/en.json`, `messages/bn.json` |
+| What                                 | Where                                        |
+| ------------------------------------ | -------------------------------------------- |
+| Company name, phones, email, address | `src/content/company.ts`                     |
+| Projects (25)                        | `src/content/projects.ts`                    |
+| Project photos                       | `public/projects/<slug>/`                    |
+| 3D models                            | `public/models/<slug>.glb`                   |
+| Team and portraits                   | `src/content/team.ts`, `public/team/`        |
+| Clients (text wordmarks for now)     | `src/content/clients.ts`                     |
+| Phases and sectors (generic copy)    | `src/content/services.ts`                    |
+| Journal                              | `content/journal/*.mdx`                      |
+| UI text, both languages              | `messages/en.json`, `messages/bn.json`       |
+| Image blur placeholders (generated)  | `src/content/blur.json` (never edit by hand) |
 
-## Photos
+Home stats (projects, sectors, models, team) are computed from the data, so they update on their own.
 
-1. Put files in `public/images/<area>/` (e.g. `public/images/projects/<slug>/01.jpg`).
-2. Naming: lowercase, hyphens, numbered gallery files `01.jpg`, `02.jpg`.
-3. Sizes: hero 2400×1350 (16:9); gallery 1800px wide; portraits 800×1000; client logos SVG preferred.
-   JPG/WebP under 400 KB each after export. Next.js serves AVIF/WebP automatically.
-4. In the content file set `image: { src: "/images/...", alt: "..." }`. While `src` is empty the
-   `PlaceholderImage` is shown; the layout does not change.
+## Adding a new project
 
-## Alt text rules
+1. **Folder.** Create `public/projects/<slug>/`. The slug is lowercase with hyphens, e.g. `new-mosque`.
+2. **Photos.** For each photo, export two files:
+   - `<slug>-NN.jpg`: full size, **max 2400 px** on the long edge
+   - `<slug>-NN-1200.jpg`: web size, **1200 px** on the long edge
 
-Describe what is visible and why it matters, in one sentence, without "image of". Decorative images get `alt=""`.
-Provide both `en` and `bn` alt text.
+   Number from `01`. **`-01` is the cover** and must be the first photo. JPG, roughly 80–85 % quality.
 
-## Adding a project
+3. **Data.** Copy an existing entry in `src/content/projects.ts` and fill in:
+   - `slug`, `title` (and `titleBn` if you have it), `category`
+     (`Residential | Commercial | Hospitality | Interior | Institutional`), `scope`, `status`
+     (`Completed | In progress | Construction starting | Proposed | Design`), `location`, `summary`
+   - Optional: `area`, `year`, `client`, `photoCredit`. Facts you leave out are simply not shown.
+   - `cover` (the `-01.jpg` path) and `images`: one entry per photo with `src`, `thumb` (the `-1200` file),
+     `width` and `height` (of the **full-size** file, in pixels) and `alt`.
+   - Order matters: the Projects page keeps the order of this file, so put new completed work near the top.
+4. **Blur placeholders.** Run `pnpm content:blur` (Node 22.18 or newer). It rewrites `src/content/blur.json`.
+5. **Check.** Run `pnpm test`: it verifies every file you listed exists, slugs are unique and every image has a
+   blur placeholder. Then `pnpm dev` and open `/en/projects/<slug>`.
 
-Copy an entry in `projects.ts`, give it a unique `slug`, fill each field in `en` and `bn`, add gallery
-images, set `featured: true` to show it on Home (3 are shown). For a 3D model see `docs/HANDOVER.md`.
+To feature a project on Home, put its slug in `FEATURED_SLUGS` (top of `projects.ts`).
 
-## Adding a journal post
+### Alt text
 
-Create `content/journal/<slug>.mdx` with frontmatter: `title`, `date` (YYYY-MM-DD), `category`
-(Site update | Design | Handover | News), `excerpt`, `cover`, `author`.
+Describe what is visible in one sentence, without "image of". The current alt text is a generic "Project, photo
+NN"; replacing it with real descriptions is a worthwhile accessibility improvement.
+
+## Adding or replacing a 3D model
+
+A project shows **Explore in 3D** only when it has a `modelUrl`.
+
+### Conventions the viewer relies on
+
+- Format: `.glb`. **Y up, metres.** Front façade faces **+Z**, building centred on the origin, ground at y = 0.
+- Top-level nodes, named exactly: `site` (ground plate), `floor-0`, `floor-1` … `floor-N` (one per storey,
+  bottom to top) and `roof` (roof slab, parapets, frames, pergolas).
+- Glass materials must be transparent (`alphaMode: BLEND`). Everything else is matte PBR. No textures are needed.
+- "Explode floors" moves `floor-k` up by `k × 2.4 m` and `roof` by `(N + 1) × 2.4 m`.
+- The viewer adds the orange edge lines, shadows, lighting and the camera framing itself.
+
+### Steps
+
+1. Put the model in `public/models/<slug>.glb`.
+2. In the project entry add:
+
+   ```ts
+   modelUrl: "/models/<slug>.glb",
+   modelFloors: 3,
+   hotspots: [
+     { id: "entrance", label: "Lobby entrance", position: [0, 2.5, 11.3], floor: 0, photo: 2 },
+   ],
+   ```
+
+   - `position` is in **model space** (metres). Place it on the surface you want to point at.
+   - `floor` is the storey the hotspot belongs to (a number, or `"roof"`), so it moves with that floor when exploded.
+   - `photo` is the **1-based** gallery photo it opens (so it must be ≤ the number of images).
+
+3. Run `pnpm test`.
+
+### Replacing a massing model with a real SketchUp / Revit / Blender export
+
+1. Export to `.glb` in metres, Y up. Rename the top-level groups to `site`, `floor-0` … `floor-N` and `roof`.
+   Front façade towards +Z; origin at the centre of the footprint, ground at y = 0.
+2. Compress it:
+
+   ```bash
+   npx @gltf-transform/cli optimize house.glb public/models/<slug>.glb --compress draco
+   # or: --compress meshopt
+   ```
+
+   Aim for under a few MB. Draco decoders are self-hosted in `public/draco/`.
+
+3. Re-check the hotspot `position`s: a real model rarely matches the old massing model's coordinates.
+
+## Team
+
+Edit `src/content/team.ts`. Portraits are 1600×2000 in `public/team/`: `<name>.jpg` (colour) and
+`<name>-bw.jpg` (black and white; the site uses `photo`). Members without a `photo` get an initials tile with
+"Photo coming soon". A role containing "TBC" is hidden. Run `pnpm content:blur` after adding portraits.
+
+## Journal
+
+Create `content/journal/<slug>.mdx` with frontmatter `title`, `date` (YYYY-MM-DD), `category`
+(Site update | Design | Handover | News), `excerpt`, `cover` (a path under `/public`, e.g. a project's `-1200.jpg`)
+and `author`; optionally `title_bn`, `excerpt_bn`. Set `review: true` on drafts that still need approval. Bodies
+are English and shared by both languages. Run `pnpm content:blur` if the cover is a new file.
 
 ## Translations
 
-Edit `messages/bn.json`. Bangla is a first-pass translation that needs a native review.
+Edit `messages/bn.json` alongside `messages/en.json` (a unit test fails if their keys differ). Project text
+(summary, scope, location) is currently English only; Bangla pages show it with a short note. Add a `titleBn` to
+give a project a Bangla title.

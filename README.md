@@ -4,10 +4,11 @@ Website for **Chawni Architectures** (চাউনি — স্থাপত্�
 interior and construction company. Tagline: _For an environment to live._
 
 Bilingual (English / বাংলা), content-driven, with three lazy-loaded 3D scenes.
-All current content is **dummy data** — see [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md).
+Content is **real** as of v0.2.0 (25 projects, 269 photos, 12 interactive 3D models, the team). A few items are
+still missing, listed in [docs/HANDOVER.md](docs/HANDOVER.md). How to edit content: [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md).
 
-**Status: v0.1.0.** All pages, three 3D scenes, SEO and tests are done; content is dummy until real photos
-and details are supplied. See [docs/HANDOVER.md](docs/HANDOVER.md).
+**Status: v0.2.0.** Real projects, photos, team and 3D models are in; pages, SEO and tests are complete.
+Still missing: office address, some years/areas, two team photos, client logos, journal review. See [docs/HANDOVER.md](docs/HANDOVER.md).
 
 ## Stack
 
@@ -26,17 +27,18 @@ pnpm dev           # http://localhost:3000  (redirects to /en)
 
 ## Scripts
 
-| Script           | What it does                                                |
-| ---------------- | ----------------------------------------------------------- |
-| `pnpm dev`       | Dev server                                                  |
-| `pnpm build`     | Production build                                            |
-| `pnpm start`     | Serve the production build                                  |
-| `pnpm lint`      | ESLint (next, typescript, jsx-a11y)                         |
-| `pnpm typecheck` | `next typegen` + `tsc --noEmit`                             |
-| `pnpm test`      | Vitest unit tests (79)                                      |
-| `pnpm test:e2e`  | Playwright smoke + axe, 73 tests (needs `pnpm build` first) |
-| `pnpm analyze`   | Bundle analyzer (webpack build)                             |
-| `pnpm format`    | Prettier                                                    |
+| Script              | What it does                                                |
+| ------------------- | ----------------------------------------------------------- |
+| `pnpm dev`          | Dev server                                                  |
+| `pnpm build`        | Production build                                            |
+| `pnpm start`        | Serve the production build                                  |
+| `pnpm lint`         | ESLint (next, typescript, jsx-a11y)                         |
+| `pnpm typecheck`    | `next typegen` + `tsc --noEmit`                             |
+| `pnpm test`         | Vitest unit tests (79)                                      |
+| `pnpm test:e2e`     | Playwright smoke + axe, 73 tests (needs `pnpm build` first) |
+| `pnpm analyze`      | Bundle analyzer (webpack build)                             |
+| `pnpm content:blur` | Regenerate blur placeholders after adding photos            |
+| `pnpm format`       | Prettier                                                    |
 
 ## Structure
 

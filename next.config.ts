@@ -12,7 +12,9 @@ const withNextIntl = createNextIntlPlugin({
 const analyze = withBundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
 
 const nextConfig: NextConfig = {
-  images: { formats: ["image/avif", "image/webp"] },
+  // WebP only: AVIF encoding of hundreds of large photos makes the first (uncached) request of each
+  // image slow. WebP is nearly as small and far faster to produce.
+  images: { formats: ["image/webp"] },
   turbopack: {
     rules: {
       "*.css": {

@@ -45,3 +45,4 @@ Newest last. Format: **date — decision** — reason.
 - **2026-11-18 — The Home "what we do" scene keeps its procedural building.** The real GLBs are massing models of individual projects; using `samriddhi.glb` for phase 04 would tie a generic section to one client's unbuilt house and lose the plan/design/engineer states.
 - **2026-11-18 — The contact map stays a placeholder** (the only remaining one) because the street address is still "[TBC]".
 - **2026-11-18 — Journal dates are placeholders.** The six stories are drafts from the project data (frontmatter `review: true`); only the Team Consultancy UK date (2021) is anchored to the data.
+- **2026-11-18 — Image formats are WebP only** (was AVIF + WebP). With 269 large photos, the first uncached AVIF encode of each image took seconds and stalled page loads; WebP is nearly as small and fast to encode.
