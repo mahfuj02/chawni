@@ -1,13 +1,13 @@
 # Chawni Architectures
 
-Website for **Chawni Architectures** (চাউনি — স্থাপত্য প্রকৌশল), an architecture, engineering,
+Website for **Chawni Architectures** (ছাউনি — স্থাপত্য প্রকৌশল), an architecture, engineering,
 interior and construction company. Tagline: _For an environment to live._
 
-Bilingual (English / বাংলা), content-driven, with three lazy-loaded 3D scenes.
+Bilingual (English / বাংলা), content-driven, with a 3D logo intro, a depth-parallax hero and a lazy-loaded project 3D viewer.
 Content is **real** as of v0.2.0 (25 projects, 269 photos, 12 interactive 3D models, the team). A few items are
 still missing, listed in [docs/HANDOVER.md](docs/HANDOVER.md). How to edit content: [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md).
 
-**Status: v0.3.0.** Real content plus a full-screen depth-parallax project hero on Home.
+**Status: v0.4.0.** Real content, the depth-parallax hero, the 3D logo intro, the real-image "what we do" sequence and a brand audit.
 Still missing: office address, some years/areas, two team photos, client logos, journal review. See [docs/HANDOVER.md](docs/HANDOVER.md).
 
 ## Stack

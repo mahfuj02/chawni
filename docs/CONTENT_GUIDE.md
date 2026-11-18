@@ -119,6 +119,8 @@ give a project a Bangla title.
 The four hero slides are listed in `src/content/hero.ts`; assets are in `public/hero/`. Captions (title, location, scope,
 status) come from the project, so set `projectSlug` to an existing project.
 
+A slide also needs a **1200×675 depth map** (`<id>-depth.png`) made with a monocular depth model such as Depth Anything V2 small: white = near, black = far, with a 2–3 px blur. Then set the focus values (0–1) in `hero.ts`.
+
 To add or replace a slide:
 
 1. **Image.** A 16:9 photo at **2400×1350** (`<id>.jpg`) plus a **1280×720** copy (`<id>-1280.jpg`) for phones and slow

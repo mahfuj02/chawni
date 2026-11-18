@@ -1,3 +1,25 @@
+# [0.4.0](/compare/v0.3.0...v0.4.0) (2026-11-18)
+
+
+### Features
+
+* **hero:** restore the shade overlay and keep the copy clear of the header on short viewports
+* **intro:** add a 3D logo intro before the hero (Home, first visit per session, skippable, separate chunk)
+* **home:** replace the procedural 3D building with a real-image project sequence (plan, design, engineer, build)
+
+
+### Bug Fixes
+
+* **a11y:** make breadcrumb, contact and frame-caption links 44px
+* **i18n:** use the Bangla name ছাউনি in the footer, a project title and the journal byline
+
+
+### Styles
+
+* **brand:** use the orange-text token for large numerals on white
+* **team:** black-and-white portraits and no placeholder tiles
+
+
 # [0.3.0](/compare/v0.2.0...v0.3.0) (2026-11-18)
 
 
