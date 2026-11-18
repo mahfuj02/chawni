@@ -1,21 +1,34 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { Button } from "@/components/ui";
 import { submitInquiry } from "@/app/[locale]/contact/actions";
-import {
-  SERVICE_OPTIONS,
-  contactSchema,
-  type ContactInput,
-  type ContactValues,
-} from "@/lib/validation";
+import { SERVICE_OPTIONS } from "@/lib/service-options";
+import type { ContactInput, ContactValues } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "success" | "error" | "rate_limited";
+
+/**
+ * zod (~45 KB gzipped) is only needed once someone submits, so it is loaded on demand
+ * (and warmed up the first time a field gets focus) instead of being part of the page.
+ */
+const loadValidation = () =>
+  Promise.all([import("@hookform/resolvers/zod"), import("@/lib/validation")]);
+
+const lazyZodResolver: Resolver<ContactInput, unknown, ContactValues> = async (
+  values,
+  context,
+  options,
+) => {
+  const [{ zodResolver }, { contactSchema }] = await loadValidation();
+  return zodResolver(contactSchema)(values, context, options) as ReturnType<
+    Resolver<ContactInput, unknown, ContactValues>
+  >;
+};
 
 const fieldBase =
   "min-h-12 w-full rounded-card border-2 bg-white px-4 py-3 text-ink placeholder:text-muted/70 focus-visible:border-ink";
@@ -74,7 +87,7 @@ export function ContactForm() {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<ContactInput, unknown, ContactValues>({
-    resolver: zodResolver(contactSchema),
+    resolver: lazyZodResolver,
     defaultValues: { name: "", phone: "", email: "", service: undefined, message: "", website: "" },
   });
 
@@ -124,7 +137,12 @@ export function ContactForm() {
   const border = (invalid: boolean) => (invalid ? "border-[#b42318]" : "border-line");
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      onFocusCapture={() => void loadValidation()}
+      noValidate
+      className="flex flex-col gap-6"
+    >
       <h2 className="text-h3">{t("title")}</h2>
 
       {(status === "error" || status === "rate_limited") && (

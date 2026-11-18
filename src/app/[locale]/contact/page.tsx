@@ -1,12 +1,18 @@
 import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHero } from "@/components/sections/PageHero";
-import { ContactForm } from "@/components/forms/ContactForm";
 import { Button, Container, PlaceholderImage } from "@/components/ui";
 import { company, whatsappUrl } from "@/content";
 import { pick } from "@/lib/localized";
 import { pageMetadata } from "@/lib/seo";
+
+// Code-split: the form pulls in react-hook-form and zod, which no other page needs.
+// It still server-renders, so the form is in the HTML.
+const ContactForm = dynamic(() =>
+  import("@/components/forms/ContactForm").then((m) => m.ContactForm),
+);
 
 export async function generateMetadata({
   params,
