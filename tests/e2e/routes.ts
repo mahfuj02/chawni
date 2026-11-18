@@ -15,7 +15,8 @@ export const ROUTES: string[] = [
   "/about",
   "/services",
   "/projects",
-  "/projects/courtyard-house",
+  "/projects/hotel-paradise-inn", // has a 3D model
+  "/projects/nirjhar-education", // photos only
   "/journal",
   `/journal/${journalSlugs[0]}`,
   "/contact",
