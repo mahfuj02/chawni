@@ -41,3 +41,11 @@ export function paginate<T>(items: T[], page: number, perPage: number) {
   const start = (current - 1) * perPage;
   return { items: items.slice(start, start + perPage), page: current, totalPages };
 }
+
+/** Message key under `journalPage` for a journal category label. */
+export const JOURNAL_CATEGORY_KEY = {
+  "Site update": "siteUpdate",
+  Design: "design",
+  Handover: "handover",
+  News: "news",
+} as const satisfies Record<JournalCategory, string>;

@@ -8,6 +8,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
+    // Fixed zone avoids server/client markup differences for dates.
+    timeZone: "Asia/Dhaka",
     messages: (await import(`../../messages/${locale}.json`)).default,
   };
 });
