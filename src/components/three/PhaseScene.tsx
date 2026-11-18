@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { PhaseKey } from "@/content/types";
 import { cn } from "@/lib/utils";
 import { PhaseFallback } from "./PhaseFallback";
-import { useSceneGate } from "./useSceneGate";
+import { useSceneGate, useWebGLSupport } from "./useSceneGate";
 
 const PhaseCanvas = dynamic(() => import("./PhaseCanvas"), { ssr: false });
 
@@ -13,7 +13,9 @@ const PhaseCanvas = dynamic(() => import("./PhaseCanvas"), { ssr: false });
 export function PhaseScene({ phase, title }: { phase: PhaseKey; title: string }) {
   const { ref, mode, near, inView } = useSceneGate<HTMLDivElement>();
   const [ready, setReady] = useState(false);
-  const run = mode.mode === "ready" && near;
+  const wants = mode.mode === "ready" && near;
+  const webgl = useWebGLSupport(wants);
+  const run = wants && webgl;
 
   return (
     <div ref={ref} role="img" aria-label={title} className="relative size-full">

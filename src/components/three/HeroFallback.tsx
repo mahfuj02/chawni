@@ -1,5 +1,13 @@
 import { BRAND, MARK_LINES, STROKE, TAG_POLYGON } from "./mark-lines";
 
+const FLOATING = [
+  { x: -10, y: 60, w: 120, r: -28, o: 0.85 },
+  { x: 760, y: 10, w: 90, r: 62, o: 0.7 },
+  { x: 790, y: 700, w: 110, r: -18, o: 0.8 },
+  { x: -15, y: 640, w: 80, r: 40, o: 0.65 },
+  { x: 420, y: -10, w: 70, r: 12, o: 0.6 },
+];
+
 /**
  * Static hero illustration, used while the 3D scene loads or when it cannot run
  * (reduced motion, no WebGL, low-power device). The logo strokes are repeated with a
@@ -17,6 +25,20 @@ export function HeroFallback({ title }: { title: string }) {
       className="h-full w-full"
       preserveAspectRatio="xMidYMid meet"
     >
+      {/* loose bars floating around the model, like the scene before it assembles */}
+      {FLOATING.map((b, i) => (
+        <rect
+          key={i}
+          x={b.x}
+          y={b.y}
+          width={b.w}
+          height={STROKE}
+          fill="#ffffff"
+          opacity={b.o}
+          transform={`rotate(${b.r} ${b.x + b.w / 2} ${b.y + STROKE / 2})`}
+        />
+      ))}
+
       {/* soft ground shadow */}
       <ellipse cx="470" cy="790" rx="360" ry="34" fill="#141414" opacity="0.08" />
 

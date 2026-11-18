@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { PhaseFallback } from "./PhaseFallback";
-import { useMediaQuery, useSceneGate } from "./useSceneGate";
+import { useMediaQuery, useSceneGate, useWebGLSupport } from "./useSceneGate";
 
 const ViewerCanvas = dynamic(() => import("./ProjectViewerCanvas"), { ssr: false });
 
@@ -40,8 +40,10 @@ export function ProjectModelViewer({ modelUrl, hotspots, onHotspot }: ProjectMod
     mode.mode === "ready" ||
     (mode.mode === "static" && (mode.reason === "low-power" || mode.reason === "reduced-motion"));
   const auto = mode.mode === "ready" && !smallScreen;
-  const loaded = supported && (requested || (auto && near));
-  const needsTap = supported && !loaded && !pending;
+  const wantsLoad = supported && (requested || (auto && near));
+  const webgl = useWebGLSupport(wantsLoad);
+  const loaded = wantsLoad && webgl;
+  const needsTap = supported && !wantsLoad && !pending;
 
   const toggle = "aria-pressed:bg-white aria-pressed:text-ink min-h-11 px-5 text-sm";
 
