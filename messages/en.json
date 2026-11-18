@@ -310,5 +310,8 @@
     "heading": "Something went wrong on our side.",
     "text": "Please try again. If it keeps happening, contact us.",
     "retry": "Try again"
+  },
+  "intro": {
+    "skip": "Skip intro"
   }
 }

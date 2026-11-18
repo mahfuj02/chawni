@@ -8,11 +8,13 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
 import { useMediaQuery } from "@/components/three/useSceneGate";
 import { Link } from "@/i18n/navigation";
+import { INTRO_EVENT, isIntroPlaying } from "@/lib/intro-gate";
 import { cn } from "@/lib/utils";
 import { SLIDE_MS, type GLSlide, type HeroSync } from "./hero-gl";
 
@@ -60,9 +62,16 @@ const pos = (c: HeroCaption) =>
     "--fy": `${c.fy * 100}%`,
   }) as React.CSSProperties;
 
+function subscribeIntro(cb: () => void) {
+  window.addEventListener(INTRO_EVENT, cb);
+  return () => window.removeEventListener(INTRO_EVENT, cb);
+}
+
 export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: HeroSlideshowProps) {
   const count = slides.length;
   const reduce = useMediaQuery("(prefers-reduced-motion: reduce)");
+  // While the logo intro plays, the slideshow clock and the WebGL start wait (the CSS holds the entrance).
+  const introPlaying = useSyncExternalStore(subscribeIntro, isIntroPlaying, () => false);
   const [index, setIndex] = useState(0);
   const [visited, setVisited] = useState<number[]>([0]);
   const [userPaused, setUserPaused] = useState(false);
@@ -80,7 +89,7 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
   const sync = useRef<HeroSync>({ index: 0, elapsed: 0 });
 
   const paused = userPaused || hover || focusIn;
-  const autoRun = !reduce && !paused && inView && !tabHidden;
+  const autoRun = !reduce && !paused && inView && !tabHidden && !introPlaying;
 
   const go = useCallback(
     (i: number) => {
@@ -138,7 +147,7 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
   // interaction, or after 4 s, whichever comes first. This keeps texture decoding and shader compilation
   // out of the start-up window (TBT) without making real visitors wait for the effect. Never for reduced motion.
   useEffect(() => {
-    if (reduce) return;
+    if (reduce || introPlaying) return;
     const w = window as Window & {
       requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
@@ -174,7 +183,7 @@ export function HeroSlideshow({ slides, captions, labels, firstImage, copy }: He
         else window.clearTimeout(idle);
       }
     };
-  }, [reduce]);
+  }, [reduce, introPlaying]);
 
   const onDotKey = (e: KeyboardEvent) => {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
