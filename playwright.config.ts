@@ -9,7 +9,18 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
   use: { baseURL: `http://localhost:${PORT}`, trace: "on-first-retry" },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "chromium", testIgnore: /intro.spec/, use: { ...devices["Desktop Chrome"] } },
+    // The intro is a 2.8 s WebGL animation: run it on its own, after the rest, so CPU contention from
+    // parallel software-GL workers cannot make the timing-based assertions flaky.
+    {
+      name: "intro",
+      testMatch: /intro.spec/,
+      dependencies: ["chromium"],
+      fullyParallel: false,
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
   webServer: {
     command: `pnpm start -p ${PORT}`,
     url: `http://localhost:${PORT}/en`,

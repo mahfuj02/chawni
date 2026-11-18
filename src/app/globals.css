@@ -186,3 +186,41 @@ html.lenis body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Logo intro (Home, first visit per session). <html data-intro="playing"> is set before first paint. */
+.intro-layer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: radial-gradient(120% 90% at 50% 40%, #15171a 0%, #0e0f11 70%);
+}
+html[data-intro="playing"] .intro-layer {
+  display: block;
+}
+.intro-skip {
+  position: absolute;
+  right: clamp(20px, 5vw, 72px);
+  bottom: 28px;
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.intro-skip:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+/* Hand-off: the hero's entrance waits, and the hero eases from 1.08 to 1 underneath the intro. */
+html[data-intro="playing"] .hero-rise {
+  animation-play-state: paused;
+}
+html[data-intro="playing"] [data-hero] {
+  transform: scale(var(--reveal-scale, 1.08));
+  transform-origin: 60% 45%;
+}

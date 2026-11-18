@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Intro } from "@/components/intro/Intro";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { FeaturedProjects } from "@/components/sections/home/FeaturedProjects";
@@ -53,6 +54,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       <JsonLd data={organizationJsonLd(locale)} />
+      <Intro locale={locale} />
       <Hero locale={locale} />
       <WhoWeAre stats={stats} />
       <WhatWeDo phases={phases} />
