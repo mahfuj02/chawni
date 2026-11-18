@@ -1,4 +1,4 @@
-# [0.2.0](/compare/v0.1.0...v0.2.0) (2026-11-18)
+# [0.3.0](/compare/v0.2.0...v0.3.0) (2026-11-18)
 
 
 ### Features
@@ -7,12 +7,15 @@
 * **content:** add enhanced project photos, team portraits and 3d models 03e6554
 * **content:** generate blur placeholders for project and team photos 2c0e0e1
 * **content:** replace remaining placeholders, real contacts and journal a0ef790
+* **hero:** add hero images and depth maps 28c44d5
+* **hero:** replace logo scene with depth-parallax project slideshow c512dc7
 * **projects:** replace dummy projects with real portfolio 6bb01e7
 * **seo:** real project metadata and images 89f3ca0
 
 
 ### Performance Improvements
 
+* **hero:** make the hero image the LCP and start WebGL on first interaction 5fdf77a
 * load photos lazily within 300px of the viewport af590f7
 
 # [0.1.0](/compare/90f3d9b1539edc5a367cdd5e855343f07a485aa5...v0.1.0) (2026-11-18)
