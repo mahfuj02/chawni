@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { SkipLink } from "@/components/layout/SkipLink";
+import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { routing } from "@/i18n/routing";
 import { hindSiliguri, inter, sora } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
@@ -33,7 +38,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       suppressHydrationWarning
     >
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <SkipLink />
+          <SmoothScroll />
+          <Header />
+          <main id="main" tabIndex={-1} className="outline-none">
+            {children}
+          </main>
+          <Footer />
+          <WhatsAppButton />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
