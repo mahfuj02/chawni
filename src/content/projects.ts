@@ -300,3 +300,14 @@ export const projects: Project[] = [
     featured: false,
   }),
 ];
+
+/**
+ * While real models do not exist yet, every project shows the procedural demo building in
+ * "Explore in 3D". Set to false once real GLB files are added: then only projects with a
+ * `modelUrl` show the section.
+ */
+export const DEMO_MODELS = true;
+
+export function hasModel(project: Project) {
+  return Boolean(project.modelUrl) || DEMO_MODELS;
+}
