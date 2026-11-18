@@ -15,5 +15,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}/en`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // Contact submissions are logged instead of emailed during tests.
+    env: { CONTACT_DRY_RUN: "1" },
   },
 });
