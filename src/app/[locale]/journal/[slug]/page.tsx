@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { MdxBody } from "@/components/sections/journal/MdxBody";
 import { ShareLinks } from "@/components/sections/journal/ShareLinks";
 import { coverProps, PostCard } from "@/components/sections/PostCard";
@@ -11,6 +12,7 @@ import { routing } from "@/i18n/routing";
 import { getContentSource } from "@/lib/content-source";
 import { JOURNAL_CATEGORY_KEY } from "@/lib/filters";
 import { formatDate } from "@/lib/format";
+import { articleJsonLd } from "@/lib/jsonld";
 import { pick } from "@/lib/localized";
 import { absoluteUrl, localizedPath, pageMetadata } from "@/lib/seo";
 
@@ -53,6 +55,7 @@ export default async function JournalPostPage({ params }: PageProps<"/[locale]/j
 
   return (
     <>
+      <JsonLd data={articleJsonLd(post, locale)} />
       <article>
         <header className="section-y pb-10 md:pb-12">
           <Container className="flex max-w-3xl flex-col gap-6">

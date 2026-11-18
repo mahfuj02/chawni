@@ -1,4 +1,6 @@
-import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { FeaturedProjects } from "@/components/sections/home/FeaturedProjects";
 import { Hero } from "@/components/sections/home/Hero";
@@ -9,6 +11,21 @@ import { WhatWeDo } from "@/components/sections/home/WhatWeDo";
 import { WhoWeAre } from "@/components/sections/home/WhoWeAre";
 import { WhyChawni } from "@/components/sections/home/WhyChawni";
 import { getContentSource } from "@/lib/content-source";
+import { organizationJsonLd } from "@/lib/jsonld";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  const base = pageMetadata({
+    locale,
+    path: "/",
+    title: t("defaultTitle"),
+    description: t("defaultDescription"),
+  });
+  // The home title is already complete, so it must not get the "| Chawni Architectures" suffix.
+  return { ...base, title: { absolute: t("defaultTitle") } };
+}
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -29,6 +46,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
+      <JsonLd data={organizationJsonLd(locale)} />
       <Hero />
       <WhoWeAre stats={stats} />
       <WhatWeDo phases={phases} />
