@@ -107,7 +107,7 @@
     "text": "Architects, engineers, interior designers and site managers working side by side.",
     "seeAll": "Meet the team",
     "coFounder": "Co-founder",
-    "photoSoon": "Photo coming soon"
+    "alsoTitle": "Also on the team"
   },
   "trusted": {
     "label": "trusted by",
@@ -131,7 +131,8 @@
     "follow": "Follow",
     "rights": "All rights reserved.",
     "licences": "Trade licence: {trade} · IEB: {ieb} · IAB: {iab}",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "name": "ছাউনি আর্কিটেকচারস"
   },
   "about": {
     "title": "About us",
@@ -248,7 +249,8 @@
     "related": "Related posts",
     "englishOnly": "This article is available in English only.",
     "pagination": "Pagination",
-    "page": "Page {page}"
+    "page": "Page {page}",
+    "teamAuthor": "Chawni team"
   },
   "contact": {
     "title": "Contact",

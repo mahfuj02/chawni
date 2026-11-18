@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { TeamCard } from "@/components/sections/TeamCard";
+import { TeamCard, TeamNameList } from "@/components/sections/TeamCard";
 import { PageHero } from "@/components/sections/PageHero";
 import { Container, Photo, Reveal, SectionLabel } from "@/components/ui";
 import { company } from "@/content";
@@ -96,14 +96,17 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             </h2>
           </div>
           <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {team.map((m, i) => (
-              <li key={m.slug}>
-                <Reveal delay={(i % 3) * 100}>
-                  <TeamCard member={m} />
-                </Reveal>
-              </li>
-            ))}
+            {team
+              .filter((m) => m.photo)
+              .map((m, i) => (
+                <li key={m.slug}>
+                  <Reveal delay={(i % 3) * 100}>
+                    <TeamCard member={m} />
+                  </Reveal>
+                </li>
+              ))}
           </ul>
+          <TeamNameList members={team.filter((m) => !m.photo)} />
         </Container>
       </section>
 
