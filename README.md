@@ -6,6 +6,9 @@ interior and construction company. Tagline: _For an environment to live._
 Bilingual (English / বাংলা), content-driven, with three lazy-loaded 3D scenes.
 All current content is **dummy data** — see [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md).
 
+**Status: v0.1.0.** All pages, three 3D scenes, SEO and tests are done; content is dummy until real photos
+and details are supplied. See [docs/HANDOVER.md](docs/HANDOVER.md).
+
 ## Stack
 
 Next.js (App Router, RSC) · TypeScript strict · Tailwind CSS v4 · next-intl · Radix UI ·
@@ -23,17 +26,17 @@ pnpm dev           # http://localhost:3000  (redirects to /en)
 
 ## Scripts
 
-| Script           | What it does                                      |
-| ---------------- | ------------------------------------------------- |
-| `pnpm dev`       | Dev server                                        |
-| `pnpm build`     | Production build                                  |
-| `pnpm start`     | Serve the production build                        |
-| `pnpm lint`      | ESLint (next, typescript, jsx-a11y)               |
-| `pnpm typecheck` | `next typegen` + `tsc --noEmit`                   |
-| `pnpm test`      | Vitest unit tests                                 |
-| `pnpm test:e2e`  | Playwright smoke + axe (needs `pnpm build` first) |
-| `pnpm analyze`   | Bundle analyzer (webpack build)                   |
-| `pnpm format`    | Prettier                                          |
+| Script           | What it does                                                |
+| ---------------- | ----------------------------------------------------------- |
+| `pnpm dev`       | Dev server                                                  |
+| `pnpm build`     | Production build                                            |
+| `pnpm start`     | Serve the production build                                  |
+| `pnpm lint`      | ESLint (next, typescript, jsx-a11y)                         |
+| `pnpm typecheck` | `next typegen` + `tsc --noEmit`                             |
+| `pnpm test`      | Vitest unit tests (79)                                      |
+| `pnpm test:e2e`  | Playwright smoke + axe, 73 tests (needs `pnpm build` first) |
+| `pnpm analyze`   | Bundle analyzer (webpack build)                             |
+| `pnpm format`    | Prettier                                                    |
 
 ## Structure
 

@@ -69,7 +69,23 @@ Typed modules in `src/content/` (`company`, `stats`, `services`, `projects`, `te
 
 ## Status
 
-_Updated in Phase 9._
+**v0.1.0 — all nine phases complete, using dummy content.**
+
+| #   | Phase                                                             | Status                                 |
+| --- | ----------------------------------------------------------------- | -------------------------------------- |
+| 1   | Scaffold and tooling                                              | Done                                   |
+| 2   | Docs                                                              | Done                                   |
+| 3   | Design system + dummy content                                     | Done                                   |
+| 4   | Layout                                                            | Done                                   |
+| 5   | Pages (home, about, services, projects, journal, contact, system) | Done                                   |
+| 6   | 3D scenes (hero, phases, project viewer)                          | Done                                   |
+| 7   | SEO, performance, accessibility                                   | Done (see Lighthouse note in HANDOVER) |
+| 8   | Tests and CI                                                      | Done: 79 unit + 73 e2e passing         |
+| 9   | Wrap-up                                                           | Done                                   |
+
+What is left is content, not code: see the checklist below and [HANDOVER.md](HANDOVER.md).
+
+**Bangla:** every string in `messages/bn.json` and every Bangla field in `src/content` is a first-pass translation **marked for native review**.
 
 ## Content needed from Chawni
 
