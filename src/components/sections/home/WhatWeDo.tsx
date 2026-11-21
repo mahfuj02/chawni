@@ -157,7 +157,7 @@ export function WhatWeDo({
                 className={cn(
                   "flex flex-col justify-center gap-5 border-t border-white/15 py-12 transition-opacity duration-500",
                   pinned ? "min-h-screen" : "min-h-0",
-                  pinned && i !== active && "opacity-40",
+                  pinned && i !== active && "opacity-65",
                 )}
               >
                 <span className="font-heading text-[clamp(3.5rem,2rem+5vw,6rem)] leading-none font-semibold text-orange">
