@@ -20,21 +20,21 @@ Status of the Chawni Architectures website at **v0.2.0** (real content).
 
 ## Still missing (needs you)
 
-| Item                                                                                                              | Where to add it                                        |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **Office street address** (shown as "[TBC], Sylhet, Bangladesh"), then a real map embed                           | `src/content/company.ts`, contact page                 |
-| **Exact years and areas** for projects that have none                                                             | `src/content/projects.ts` (`year`, `area`)             |
-| **Engr. Shitol Ahmed's role** (hidden while "[Role TBC]")                                                         | `src/content/team.ts`                                  |
-| **Photos for Mahjan Prova and Shitol Ahmed** (initials tiles are shown)                                           | `public/team/`, `team.ts`, then `pnpm content:blur`    |
-| **Real client logos** (text wordmarks are shown)                                                                  | `src/content/clients.ts`                               |
-| **Journal review:** six drafts marked `review: true`; dates are placeholders                                      | `content/journal/*.mdx`                                |
-| Confirm the hotspot for "Green boundary wall" on `duplex-akhalia` (it had no photo 3, now photo 2)                | `src/content/projects.ts`                              |
-| Confirm "Engr. Masum Parvez" spelling (the slides said "Paevej") and the photo credits                            | `team.ts`, `projects.ts`                               |
-| Real testimonials (none are shown), social links, opening hours                                                   | `clients.ts`, `company.ts`                             |
-| Licence and IEB/IAB numbers (`[TBC]`), privacy policy text                                                        | `company.ts`, `messages/*.json`                        |
-| Office address, project years and areas, Shitol Ahmed's role, two team photos, client logos                       | `company.ts`, `projects.ts`, `team.ts`, `public/team/` |
-| Real plans and site photos for one project, to replace the four stand-in frames in the Home "what we do" sequence | `src/content/what-we-do.ts`                            |
-| Native review of all Bangla text; Bangla versions of project summaries                                            | `messages/bn.json`, `projects.ts`                      |
+| Item                                                                                               | Where to add it                                        |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **Office street address** (shown as "[TBC], Sylhet, Bangladesh"), then a real map embed            | `src/content/company.ts`, contact page                 |
+| **Exact years and areas** for projects that have none                                              | `src/content/projects.ts` (`year`, `area`)             |
+| **Engr. Shitol Ahmed's role** (hidden while "[Role TBC]")                                          | `src/content/team.ts`                                  |
+| **Photos for Mahjan Prova and Shitol Ahmed** (initials tiles are shown)                            | `public/team/`, `team.ts`, then `pnpm content:blur`    |
+| **Real client logos** (text wordmarks are shown)                                                   | `src/content/clients.ts`                               |
+| **Journal review:** six drafts marked `review: true`; dates are placeholders                       | `content/journal/*.mdx`                                |
+| Confirm the hotspot for "Green boundary wall" on `duplex-akhalia` (it had no photo 3, now photo 2) | `src/content/projects.ts`                              |
+| Confirm "Engr. Masum Parvez" spelling (the slides said "Paevej") and the photo credits             | `team.ts`, `projects.ts`                               |
+| Real testimonials (none are shown), social links, opening hours                                    | `clients.ts`, `company.ts`                             |
+| Licence and IEB/IAB numbers (`[TBC]`), privacy policy text                                         | `company.ts`, `messages/*.json`                        |
+| Office address, project years and areas, Shitol Ahmed's role, two team photos, client logos        | `company.ts`, `projects.ts`, `team.ts`, `public/team/` |
+| Four images of one building (same view) to swap the Home "what we do" sequence                     | `src/content/process.ts`                               |
+| Native review of all Bangla text; Bangla versions of project summaries                             | `messages/bn.json`, `projects.ts`                      |
 
 ## How to change things
 

@@ -138,13 +138,14 @@ Keep the slideshow to a handful of slides: the others are preloaded in the backg
 
 ## The Home "what we do" sequence
 
-The dark section on Home shows four frames, one per phase: `public/what-we-do/plan.svg` (Plan), then
-photos from Samriddhi (Design render), Dr Arafat Palace (Engineer, with an orange structural grid drawn
-over it) and Windsor Hotel (Build, completed). They are stand-ins taken from different projects, listed in
-`src/content/what-we-do.ts`.
+The dark section on Home shows four images of **one building** (Hotel Paradise Inn), one per phase, in
+`public/what-we-do/`: `plan.jpg` (elevation drawing), `design.jpg` (white model), `engineer.jpg`
+(structural x-ray) and `build.jpg` (final visualisation at dusk). Each also has an 800×600 `-800.jpg`
+for phones. They are generated from one render (drawing, white model, structural x-ray, final), all at the
+**same 4:3 framing** (1600×1200), so cross-fading them looks like the building materialising.
 
-**When real plans and site photos exist for one project, replace these four frames with that single
-project's real journey:** its plan drawing, its 3D render, a structural drawing or photo, and its
-completed photo. Edit `WHAT_WE_DO_FRAMES` (image path, `projectSlug`). If you replace the plan, keep the
-named groups `walls`, `openings`, `glazing`, `grid`, `columns`, `dims`, then regenerate
-`src/content/plan-markup.ts` from the new SVG (the draw-in animation targets those group ids).
+**To swap the building, supply four images of the same view** (same framing, same 4:3 ratio), save them
+under the same four names plus the `-800` versions, and update `src/content/process.ts` (alt text,
+captions in both languages) and `PROCESS_PROJECT_SLUG` (the project the caption links to). The badge text
+on the Build phase is `what.badge` in `messages/*.json`; keep it "Visualised" while the project is only
+proposed.
