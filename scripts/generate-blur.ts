@@ -28,14 +28,19 @@ const files = (await Promise.all(FOLDERS.map((f) => walk(path.join(PUBLIC, f))))
 const blur: Record<string, string> = {};
 // Sequential on purpose: keeps memory flat for several hundred large photos.
 for (const file of files) {
-  const buf = await sharp(file)
-    .rotate()
-    .resize({ width: 10 })
-    .blur(0.6)
-    .webp({ quality: 35 })
-    .toBuffer();
   const key = "/" + path.relative(PUBLIC, file).split(path.sep).join("/");
-  blur[key] = `data:image/webp;base64,${buf.toString("base64")}`;
+  try {
+    const buf = await sharp(file)
+      .rotate()
+      .resize({ width: 10 })
+      .blur(0.6)
+      .webp({ quality: 35 })
+      .toBuffer();
+    blur[key] = `data:image/webp;base64,${buf.toString("base64")}`;
+  } catch (e) {
+    // An unreadable image only loses its placeholder; `pnpm check:media` is what fails on it.
+    console.warn(`warning: no blur placeholder for ${key}: ${e instanceof Error ? e.message : e}`);
+  }
 }
 
 await writeFile(

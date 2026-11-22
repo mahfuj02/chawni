@@ -1,4 +1,4 @@
-// Clients shown on Home. Text wordmarks until real logos arrive (set `logo: "/clients/x.svg"`).
+// Clients shown on Home. Text wordmarks until real logos arrive (set `logo`).
 import type { Client, Testimonial } from "./types";
 
 export const clients: Client[] = [

@@ -10,6 +10,6 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export default function Image() {
+export default async function Image() {
   return renderOgImage({ title: company.tagline.en, kicker: "architecture · engineering · build" });
 }
