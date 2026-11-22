@@ -15,7 +15,8 @@
     "analyze": "node scripts/analyze.mjs",
     "prepare": "husky",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "content:blur": "node scripts/generate-blur.ts"
+    "content:blur": "node scripts/generate-blur.ts",
+    "check:media": "node scripts/check-media.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
@@ -36,6 +37,7 @@
     "react-dom": "19.3.0",
     "react-hook-form": "^7.92.0",
     "resend": "^6.38.1",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^3.7.0",
     "three": "^0.187.0",
     "zod": "^4.6.7"
@@ -64,7 +66,6 @@
     "lint-staged": "^17.6.1",
     "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "sharp": "^0.35.5",
     "tailwindcss": "4.3.3",
     "typescript": "^5",
     "vitest": "^5.1.0"

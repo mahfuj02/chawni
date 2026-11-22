@@ -2,6 +2,7 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { ImageResponse } from "next/og";
+import sharp from "sharp";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
@@ -17,23 +18,41 @@ function logo() {
   return logoDataUri;
 }
 
-const photoCache = new Map<string, string>();
-/** Read a public image (e.g. "/projects/x/x-01-1200.jpg") as a data URI for the card background. */
-function photoUri(publicPath: string) {
-  let uri = photoCache.get(publicPath);
-  if (!uri) {
-    const bytes = fs.readFileSync(path.join(process.cwd(), "public", publicPath));
-    uri = `data:image/jpeg;base64,${bytes.toString("base64")}`;
+const photoCache = new Map<string, string | null>();
+/**
+ * Read a public image (a /projects/... 1200 px path) as a baseline sRGB JPEG data URI for the card
+ * background. Fail-safe: if the file is missing, an LFS pointer or not a readable image, log a warning and
+ * return undefined so the card renders without a photo instead of crashing the build.
+ */
+async function photoUri(publicPath: string): Promise<string | undefined> {
+  const cached = photoCache.get(publicPath);
+  if (cached !== undefined) return cached ?? undefined;
+  try {
+    const file = path.join(process.cwd(), "public", publicPath);
+    // Re-encoding also normalises progressive, CMYK and mislabeled files into what the OG renderer reads.
+    const bytes = await sharp(file)
+      .rotate()
+      .resize(1200, 630, { fit: "cover" })
+      .toColorspace("srgb")
+      .jpeg({ quality: 82, progressive: false })
+      .toBuffer();
+    const uri = `data:image/jpeg;base64,${bytes.toString("base64")}`;
     photoCache.set(publicPath, uri);
+    return uri;
+  } catch (e) {
+    console.warn(
+      `[og] cannot read ${publicPath}, using the default card: ${e instanceof Error ? e.message : e}`,
+    );
+    photoCache.set(publicPath, null);
+    return undefined;
   }
-  return uri;
 }
 
 /**
  * Branded social card: ink background, light logo, orange rule, title.
  * Titles are English in every locale: the default OG font has no Bengali glyphs.
  */
-export function renderOgImage({
+export async function renderOgImage({
   title,
   kicker,
   photo,
@@ -43,6 +62,7 @@ export function renderOgImage({
   /** Public path of a photo (use the 1200 px version) shown behind the text. */
   photo?: string;
 }) {
+  const photoSrc = photo ? await photoUri(photo) : undefined;
   const size = title.length > 60 ? 54 : title.length > 36 ? 64 : 76;
   return new ImageResponse(
     <div
@@ -57,11 +77,11 @@ export function renderOgImage({
         fontFamily: "sans-serif",
       }}
     >
-      {photo ? (
+      {photoSrc ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={photoUri(photo)}
+            src={photoSrc}
             alt=""
             width={1200}
             height={630}
