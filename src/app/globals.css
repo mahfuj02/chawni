@@ -224,3 +224,39 @@ html[data-intro="playing"] [data-hero] {
   transform: scale(var(--reveal-scale, 1.08));
   transform-origin: 60% 45%;
 }
+
+/* Clients marquee: two rows on a duplicated track. Duration = cards x per-card time, so speed stays constant. */
+.cm-row {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 80px,
+    black calc(100% - 80px),
+    transparent
+  );
+}
+.cm-track {
+  --per-card: 10s; /* (220 + 16 px) / ~23.6 px/s: about 70 s for 7 cards on phones */
+  display: flex;
+  width: max-content;
+  gap: 16px;
+  animation: cm-rtl calc(var(--n) * var(--per-card)) linear infinite;
+}
+@media (min-width: 640px) {
+  .cm-track {
+    --per-card: 7.9s; /* (260 + 16 px) / ~35 px/s: about 55 s for 7 cards */
+  }
+}
+.cm-track[data-direction="ltr"] {
+  animation-direction: reverse;
+}
+/* One copy is half the track plus half a gap. */
+@keyframes cm-rtl {
+  to {
+    transform: translateX(calc(-50% - 8px));
+  }
+}
+.cm-section:hover .cm-track,
+.cm-section:focus-within .cm-track {
+  animation-play-state: paused;
+}

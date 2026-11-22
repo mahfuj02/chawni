@@ -21,6 +21,7 @@ const CLIENT_NAMESPACES = [
   "common",
   "nav",
   "what",
+  "trusted",
   "projectsPage",
   "projectDetail",
   "journalPage",

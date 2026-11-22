@@ -78,7 +78,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <FeaturedProjects projects={featured} />
       {/* Home shows the first three members (the leadership row), in team order. */}
       <TeamSection members={team.slice(0, 3)} disciplines={disciplines} />
-      <TrustedBy testimonial={testimonials[0]} clients={clients} />
+      <TrustedBy
+        testimonial={testimonials[0]}
+        clients={clients}
+        projectCount={stats.find((s) => s.key === "projects")?.value ?? 0}
+      />
       <JournalPreview posts={posts.slice(0, 3)} />
       <CtaBand />
     </>

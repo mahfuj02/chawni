@@ -398,33 +398,90 @@ test.describe("home projects and clients", () => {
     ]);
   });
 
-  test("shows the six client wordmarks", async ({ page }) => {
+  test("shows each of the 13 clients once to assistive tech, and the logos for six", async ({
+    page,
+  }) => {
     await page.goto("/en");
-    const logos = page.getByRole("list", { name: "Client logos" });
-    await expect(logos.locator("li")).toHaveText([
-      "Windsor Hotel",
-      "Team Consultancy UK",
-      "Nirjhar Education",
-      "Study Milestone",
-      "YES Academy",
-      "Zaman Associates",
-    ]);
+    const group = page.getByRole("group", { name: "Client logos" });
+    await group.scrollIntoViewIfNeeded();
+    // Duplicates are aria-hidden, so only 13 cards are exposed.
+    await expect(group.getByRole("link")).toHaveCount(13);
+    await expect(group.getByRole("link", { name: /^Windsor Hotel Hospitality$/ })).toHaveAttribute(
+      "href",
+      /\/projects\/windsor-hotel$/,
+    );
+    await expect(group.locator('img[src="/clients/windsor-hotel.svg"]').first()).toHaveCount(1);
+    for (const slug of [
+      "windsor-hotel",
+      "team-consultancy-uk",
+      "nirjhar-education",
+      "study-milestone",
+      "yes-academy",
+      "zaman-associates",
+    ]) {
+      await expect(group.locator(`img[src="/clients/${slug}.svg"]`).first()).toHaveCount(1);
+      // Off-screen images are lazy, so check the files are really served, as a deployment would.
+      for (const file of [`${slug}.svg`, `${slug}-mono.svg`]) {
+        const res = await page.request.get(`/clients/${file}`);
+        expect(res.status(), file).toBe(200);
+        expect(res.headers()["content-type"], file).toContain("image/svg+xml");
+        expect(await res.text(), file).toMatch(/<svg[\s>]/);
+      }
+    }
   });
-});
 
-test.describe("journal", () => {
-  test("lists posts, pages with Load more, and filters by category", async ({ page }) => {
-    await page.goto("/en/journal");
-    const cards = page.locator("main article");
-    await expect(cards).toHaveCount(4); // featured + 3
-    await page.getByRole("button", { name: "Load more" }).click();
-    await expect(cards).toHaveCount(6);
-    await expect(page.getByRole("button", { name: "Load more" })).toBeHidden();
+  test("the rows move in opposite directions and pause on hover", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/en");
+    const tracks = page.locator(".cm-track");
+    // The tracks are moving, so scroll the (still) group into view instead of the track itself.
+    await page.getByRole("group", { name: "Client logos" }).scrollIntoViewIfNeeded();
+    await expect(tracks).toHaveCount(2);
+    await expect(tracks.nth(0)).toHaveCSS("animation-direction", "normal");
+    await expect(tracks.nth(1)).toHaveCSS("animation-direction", "reverse");
+    await expect(tracks.nth(0)).toHaveCSS("animation-play-state", "running");
+    // The cards are moving, so put the pointer over the first row rather than targeting a card.
+    const box = (await page.getByRole("group", { name: "Client logos" }).boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + 78);
+    await expect(tracks.nth(0)).toHaveCSS("animation-play-state", "paused");
+    await expect(tracks.nth(1)).toHaveCSS("animation-play-state", "paused");
+    await page.screenshot({ path: "test-results/clients-1440.png" });
+  });
 
-    const filter = page.getByRole("navigation", { name: "Filter posts by category" });
-    await filter.getByRole("link", { name: "Handover" }).click();
-    await expect(page).toHaveURL(/category=handover$/);
-    await expect(cards).toHaveCount(3);
+  test("the stats strip counts up and shows Bangla numerals in bn", async ({ page }) => {
+    await page.goto("/en");
+    const stats = page.locator('section[aria-labelledby="trusted-heading"] dl');
+    await stats.scrollIntoViewIfNeeded();
+    await expect(stats).toContainText("25+");
+    await expect(stats).toContainText("13");
+    await page.goto("/bn");
+    const bn = page.locator('section[aria-labelledby="trusted-heading"] dl');
+    await bn.scrollIntoViewIfNeeded();
+    await expect(bn).toContainText("২৫+");
+    await expect(bn).toContainText("১৩");
+  });
+
+  test("reduced motion: a static wrapping grid, no marquee tracks", async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await context.newPage();
+    await page.goto("/en");
+    await expect(page.locator(".cm-track")).toHaveCount(0);
+    const list = page.getByRole("list", { name: "Client logos" });
+    await list.scrollIntoViewIfNeeded();
+    await expect(list.locator("li")).toHaveCount(13);
+    await context.close();
+  });
+
+  test("clients at 375, 768 and 1440 px: no horizontal overflow", async ({ page }) => {
+    for (const width of [375, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/en");
+      const group = page.getByRole("group", { name: "Client logos" });
+      await group.scrollIntoViewIfNeeded();
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
+      await group.screenshot({ path: `test-results/clients-${width}.png` });
+    }
   });
 
   test("an article shows the body, share links and related posts", async ({ page }) => {

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { FEATURED_SLUGS, projects, stats, team } from "@/content";
+import { clients, FEATURED_SLUGS, projects, stats, team } from "@/content";
 import { PROJECT_CATEGORIES, STATUS_KEY, categorySlug, type ProjectStatus } from "@/content/types";
 import blur from "@/content/blur.json";
 import messagesEn from "../../messages/en.json";
@@ -222,16 +222,11 @@ describe("ContentSource (local implementation)", () => {
     expect(members.filter((m) => m.photoBlur)).toHaveLength(5);
   });
 
-  it("has no testimonials until real ones exist, and six client wordmarks", async () => {
+  it("has no testimonials until real ones exist, and thirteen clients in data order", async () => {
     expect(await content.getTestimonials()).toEqual([]);
-    expect((await content.getClients()).map((c) => c.name)).toEqual([
-      "Windsor Hotel",
-      "Team Consultancy UK",
-      "Nirjhar Education",
-      "Study Milestone",
-      "YES Academy",
-      "Zaman Associates",
-    ]);
+    expect((await content.getClients()).map((c) => c.slug)).toEqual(clients.map((c) => c.slug));
+    expect(clients).toHaveLength(13);
+    expect(clients.filter((c) => c.logo)).toHaveLength(6);
   });
 });
 

@@ -101,7 +101,10 @@
   "trusted": {
     "label": "trusted by",
     "heading": "Trusted by clients across Sylhet.",
-    "logos": "Client logos"
+    "logos": "Client logos",
+    "statProjects": "Projects",
+    "statClients": "Clients",
+    "statSectors": "Sectors"
   },
   "journalSection": {
     "label": "journal",
