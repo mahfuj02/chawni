@@ -289,48 +289,83 @@ test.describe("project detail", () => {
 });
 
 test.describe("about and team", () => {
-  test("About shows seven cards: two founders first, then five in the team grid", async ({
+  test("About shows seven cards in a 3-per-row grid; the first three are the leadership row", async ({
     page,
   }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/en/about");
-    const members = page.locator("#leadership article");
+    const section = page.locator("#leadership");
+    const members = section.locator("article");
     // Portraits load lazily, so bring the grid into view first.
     await members.last().scrollIntoViewIfNeeded();
     await expect(members).toHaveCount(7);
+    const names = ["Najir Hridoy", "Masum Parvez", "Mahfuj Ahmed"];
+    for (const [i, name] of names.entries()) {
+      await expect(members.nth(i).getByRole("heading")).toContainText(name);
+    }
     await expect(members.getByText("Co-founder")).toHaveCount(2);
-    await expect(members.nth(0).getByRole("heading", { name: "Engr. Najir Hridoy" })).toBeVisible();
-    await expect(members.nth(1).getByRole("heading", { name: "Engr. Masum Parvez" })).toBeVisible();
-    await expect(members.nth(2).getByRole("heading", { name: "Md Mahfuj Ahmed" })).toBeVisible();
     await expect(members.nth(2).getByText("Head of Digital")).toBeVisible();
-    // The first row is the two founders, the second row the other five.
-    await expect(
-      page.locator("#leadership").getByRole("heading", { name: "Founders" }),
-    ).toBeVisible();
-    await expect(
-      page.locator("#leadership").getByRole("heading", { name: "Team", exact: true }),
-    ).toBeVisible();
-    await expect(page.locator("#leadership ul").first().locator("article")).toHaveCount(2);
-    await expect(page.locator("#leadership ul").nth(1).locator("article")).toHaveCount(5);
-    // Five portraits (black and white), two initials tiles.
+    await expect(members.nth(2)).toContainText("Technology & client relations");
+    await expect(section.getByText("leadership", { exact: true })).toHaveCount(1);
+    // No separate Founders row any more.
+    await expect(section.getByRole("heading", { name: "Founders" })).toHaveCount(0);
+
+    // Desktop: three columns, about 320px wide, last card centred.
+    const boxes = await members.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: Math.round(r.x), y: Math.round(r.y + scrollY), w: Math.round(r.width) };
+      }),
+    );
+    expect(new Set(boxes.slice(0, 3).map((b) => b.y)).size).toBe(1);
+    expect(boxes[3].y).toBeGreaterThan(boxes[0].y);
+    expect(boxes[0].w).toBeGreaterThan(300);
+    expect(boxes[0].w).toBeLessThan(340);
+    expect(Math.abs(boxes[6].x - boxes[1].x)).toBeLessThanOrEqual(2);
+
+    // Five portraits (black and white, 4:5) and two initials tiles. Portraits load lazily, so visit each card.
+    for (let i = 0; i < 7; i++) await members.nth(i).scrollIntoViewIfNeeded();
     await expect(members.locator("img")).toHaveCount(5);
     await expect(members.first().locator("img")).toHaveCSS("filter", "grayscale(1)");
     await expect(members.getByText("Photo coming soon")).toHaveCount(2);
+    await section.screenshot({ path: "test-results/team-about-1440.png" });
+
+    // Tablet: two columns. Phone: one column.
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await members.last().scrollIntoViewIfNeeded();
+    await expect
+      .poll(
+        async () =>
+          (await members.nth(1).boundingBox())!.y === (await members.nth(0).boundingBox())!.y,
+      )
+      .toBe(true);
+    expect((await members.nth(2).boundingBox())!.y).toBeGreaterThan(
+      (await members.nth(0).boundingBox())!.y,
+    );
+    await section.screenshot({ path: "test-results/team-about-768.png" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect
+      .poll(
+        async () =>
+          (await members.nth(1).boundingBox())!.y > (await members.nth(0).boundingBox())!.y,
+      )
+      .toBe(true);
+    await section.screenshot({ path: "test-results/team-about-390.png" });
   });
 
-  test("Home shows the first four members in team order", async ({ page }) => {
+  test("Home shows only the leadership row: three cards, in order", async ({ page }) => {
     await page.goto("/en");
     const section = page.locator('section[aria-labelledby="team-heading"]');
     const cards = section.locator("article");
-    await expect(cards).toHaveCount(4);
-    for (const [i, name] of [
-      "Najir Hridoy",
-      "Masum Parvez",
-      "Mahfuj Ahmed",
-      "Jahid Hasan",
-    ].entries()) {
+    await expect(cards).toHaveCount(3);
+    for (const [i, name] of ["Najir Hridoy", "Masum Parvez", "Mahfuj Ahmed"].entries()) {
       await expect(cards.nth(i)).toContainText(name);
     }
     await expect(section.getByText("Photo coming soon")).toHaveCount(0);
+    await expect(section.getByRole("link", { name: /Meet the team/ })).toHaveAttribute(
+      "href",
+      /\/en\/about$|\/about$/,
+    );
   });
 
   test("the contact page shows both phone numbers and the email", async ({ page }) => {

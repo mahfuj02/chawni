@@ -25,7 +25,7 @@ export const team: TeamMember[] = [
     slug: "mahfuj-ahmed",
     name: "Md Mahfuj Ahmed",
     title: "Head of Digital",
-    role: "Website, technology & client relations",
+    role: "Technology & client relations",
     photo: "/team/mahfuj-ahmed-bw.jpg",
     photoColor: "/team/mahfuj-ahmed.jpg",
     initials: "MA",
@@ -33,12 +33,12 @@ export const team: TeamMember[] = [
   {
     slug: "jahid-hasan",
     name: "Jahid Hasan",
-    role: "Graphic Designer",
+    role: "Brand & Visual Designer",
     photo: "/team/jahid-hasan-bw.jpg",
     photoColor: "/team/jahid-hasan.jpg",
     initials: "JH",
   },
-  { slug: "shitol-ahmed", name: "Engr. Shitol Ahmed", role: "[Role TBC]", initials: "SA" },
+  { slug: "shitol-ahmed", name: "Engr. Shitol Ahmed", role: "Civil Engineer", initials: "SA" },
   { slug: "mahjan-prova", name: "Engr. Mahjan Prova", role: "Architecture", initials: "MP" },
   {
     slug: "tofayel-ahmed",

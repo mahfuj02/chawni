@@ -90,11 +90,12 @@
     "seeAll": "Meet the team",
     "coFounder": "Co-founder",
     "headOfDigital": "Head of Digital",
+    "architecture": "Architecture",
+    "civilEngineer": "Civil Engineer",
+    "techClient": "Technology & client relations",
+    "brandVisual": "Brand & Visual Designer",
     "marketingSpecialist": "Marketing Specialist",
-    "graphicDesigner": "Graphic Designer",
     "photoSoon": "Photo coming soon",
-    "foundersTitle": "Founders",
-    "membersTitle": "Team",
     "alsoTitle": "Also on the team"
   },
   "trusted": {

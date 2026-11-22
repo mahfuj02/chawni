@@ -1,8 +1,8 @@
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLink, Chip, Container, Reveal, SectionLabel } from "@/components/ui";
+import { ArrowLink, Chip, Container, SectionLabel } from "@/components/ui";
 import type { TeamMemberCardData } from "@/content/types";
 import { pick, type Localized } from "@/lib/localized";
-import { TeamCard } from "../TeamCard";
+import { TeamGrid } from "../TeamCard";
 
 export function TeamSection({
   members,
@@ -24,7 +24,7 @@ export function TeamSection({
               {t("heading")}
             </h2>
             <p className="max-w-lg text-muted">{t("text")}</p>
-            <ArrowLink href="/about#leadership">{t("seeAll")}</ArrowLink>
+            <ArrowLink href="/about">{t("seeAll")}</ArrowLink>
           </div>
           <ul className="flex flex-wrap gap-2 lg:justify-end">
             {disciplines.map((d, i) => (
@@ -34,15 +34,7 @@ export function TeamSection({
             ))}
           </ul>
         </div>
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {members.map((m, i) => (
-            <li key={m.slug}>
-              <Reveal delay={i * 100}>
-                <TeamCard member={m} />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
+        <TeamGrid members={members} />
       </Container>
     </section>
   );
