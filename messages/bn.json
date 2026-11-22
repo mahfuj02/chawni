@@ -101,7 +101,10 @@
   "trusted": {
     "label": "যাদের আস্থা",
     "heading": "সিলেটজুড়ে ক্লায়েন্টদের আস্থা।",
-    "logos": "ক্লায়েন্টদের লোগো"
+    "logos": "ক্লায়েন্টদের লোগো",
+    "statProjects": "প্রকল্প",
+    "statClients": "ক্লায়েন্ট",
+    "statSectors": "খাত"
   },
   "journalSection": {
     "label": "জার্নাল",

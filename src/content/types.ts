@@ -130,12 +130,6 @@ export interface StatItem {
   label: Localized;
 }
 
-export interface Client {
-  name: string;
-  /** Logo path under /public. A text wordmark is shown while empty. */
-  logo?: string;
-}
-
 export interface Testimonial {
   quote: Localized;
   author: Localized;

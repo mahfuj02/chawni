@@ -11,8 +11,8 @@ import {
   team,
   testimonials,
 } from "@/content";
+import type { Client } from "@/content/clients";
 import type {
-  Client,
   JournalPost,
   Phase,
   Project,

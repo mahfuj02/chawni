@@ -1,17 +1,21 @@
 import { Quote } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { Container, SectionLabel } from "@/components/ui";
-import type { Client, Testimonial } from "@/content/types";
+import type { Client } from "@/content/clients";
+import type { Testimonial } from "@/content/types";
 import { pick } from "@/lib/localized";
+import { ClientStats } from "../clients/ClientStats";
+import { ClientsMarquee } from "../clients/ClientsMarquee";
 
 export function TrustedBy({
   testimonial,
   clients,
+  projectCount,
 }: {
   /** Optional: no real testimonial has been supplied yet. */
   testimonial?: Testimonial;
   clients: Client[];
+  projectCount: number;
 }) {
   const t = useTranslations("trusted");
   const locale = useLocale();
@@ -24,6 +28,7 @@ export function TrustedBy({
           <h2 id="trusted-heading" className="text-h2">
             {t("heading")}
           </h2>
+          <ClientStats projects={projectCount} />
         </div>
 
         {testimonial && (
@@ -39,31 +44,11 @@ export function TrustedBy({
             </figcaption>
           </figure>
         )}
-
-        <ul
-          aria-label={t("logos")}
-          className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6"
-        >
-          {clients.map((c) => (
-            <li
-              key={c.name}
-              className="flex aspect-[3/2] items-center justify-center rounded-card border border-line p-4 text-center font-heading text-sm font-semibold text-muted"
-            >
-              {c.logo ? (
-                <Image
-                  src={c.logo}
-                  alt={c.name}
-                  width={160}
-                  height={80}
-                  className="h-auto max-h-12 w-auto"
-                />
-              ) : (
-                c.name
-              )}
-            </li>
-          ))}
-        </ul>
       </Container>
+      {/* Full width: the edge fade does the framing. */}
+      <div className="mt-12">
+        <ClientsMarquee clients={clients} />
+      </div>
     </section>
   );
 }
