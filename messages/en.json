@@ -60,25 +60,7 @@
     "heading": "Four phases. One accountable team.",
     "text": "From the first conversation to the final handover, every phase is handled by people who talk to each other.",
     "phasesNav": "Project phases",
-    "frames": {
-      "plan": {
-        "alt": "Ground floor plan drawing in the Chawni style",
-        "caption": "Concept floor plan"
-      },
-      "render": {
-        "alt": "{project}: 3D render",
-        "caption": "{project} · Render"
-      },
-      "structure": {
-        "alt": "{project} with a structural grid drawn over it",
-        "caption": "{project} · Structural concept"
-      },
-      "completed": {
-        "alt": "{project}: completed building",
-        "caption": "{project} · Completed",
-        "badge": "Completed · {project}"
-      }
-    }
+    "badge": "Visualised · Hotel Paradise Inn"
   },
   "why": {
     "label": "why chawni",

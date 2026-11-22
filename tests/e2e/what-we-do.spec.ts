@@ -1,46 +1,112 @@
-import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test, type Page } from "@playwright/test";
 
-const chips = (page: import("@playwright/test").Page) =>
-  page.getByRole("navigation", { name: "Project phases" });
+const chips = (page: Page) => page.getByRole("navigation", { name: "Project phases" });
+const stage = (page: Page) => page.getByTestId("wwd-stage");
 
-test.describe("what we do: real-image sequence", () => {
-  test("clicking '03 Engineer' activates phase 3 and shows its frame", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/en");
+async function openDesktop(page: Page) {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/en");
+  await page.locator("#what-heading").scrollIntoViewIfNeeded();
+}
+
+const CAPTIONS = [
+  "Plan · Elevation drawing",
+  "Design · Massing model",
+  "Engineer · Structural frame",
+  "Build · Hotel Paradise Inn",
+];
+
+test.describe("what we do: four-stage sequence", () => {
+  test("scrolling to each phase changes the visible image and the caption", async ({ page }) => {
+    await openDesktop(page);
+    for (let i = 0; i < 4; i++) {
+      await page
+        .locator(`ol > li[data-phase="${i}"]`)
+        .evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+      await expect(stage(page)).toHaveAttribute("data-active", String(i));
+      await expect(page.getByTestId("wwd-caption")).toHaveText(CAPTIONS[i]);
+      const layer = stage(page).locator(`[data-testid="wwd-layer"][data-phase="${i}"]`);
+      await expect(layer).toHaveCSS("opacity", "1");
+      if (i < 3) {
+        const above = stage(page).locator(`[data-testid="wwd-layer"][data-phase="${i + 1}"]`);
+        await expect(above).toHaveCSS("opacity", "0");
+      }
+    }
+    await expect(page.getByTestId("wwd-badge")).toHaveText("Visualised · Hotel Paradise Inn");
+  });
+
+  test("badge only shows on 04 Build", async ({ page }) => {
+    await openDesktop(page);
+    await expect(page.getByTestId("wwd-badge")).toHaveCount(0);
+    await chips(page)
+      .getByRole("button", { name: /04\s*Build/ })
+      .click();
+    await expect(page.getByTestId("wwd-badge")).toBeVisible();
+  });
+
+  test("clicking '03 Engineer' shows engineer.jpg and its caption", async ({ page }) => {
+    await openDesktop(page);
     const chip = chips(page).getByRole("button", { name: /03\s*Engineer/ });
-    await chip.scrollIntoViewIfNeeded();
     await chip.click();
     await expect(chip).toHaveAttribute("aria-current", "step");
-    const frame = page.getByRole("link", { name: "Dr Arafat Palace · Structural concept" });
-    await expect(frame).toBeVisible();
-    await expect(frame).toHaveAttribute("href", /\/projects\/dr-arafat-palace$/);
+    await expect(stage(page)).toHaveAttribute("data-active", "2");
+    await expect(page.getByTestId("wwd-caption")).toHaveText("Engineer · Structural frame");
+    await expect(page.getByTestId("wwd-caption")).toHaveAttribute(
+      "href",
+      /\/projects\/hotel-paradise-inn$/,
+    );
+    const src = await stage(page).locator('[data-phase="2"] img').getAttribute("src");
+    expect(decodeURIComponent(src ?? "")).toContain("engineer.jpg");
+    // The scroll observer must not fight the click.
+    await page.waitForTimeout(1500);
+    await expect(stage(page)).toHaveAttribute("data-active", "2");
   });
 
-  test("phase 4 shows the completed photo with its badge, linked to Windsor Hotel", async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/en");
-    const chip = chips(page).getByRole("button", { name: /04\s*Build/ });
-    await chip.scrollIntoViewIfNeeded();
-    await chip.click();
-    await expect(page.getByText("Completed · Windsor Hotel").first()).toBeVisible();
-    await expect(page.getByRole("link", { name: "Windsor Hotel · Completed" })).toBeVisible();
+  test("arrow keys move focus between chips", async ({ page }) => {
+    await openDesktop(page);
+    const first = chips(page).getByRole("button", { name: /01\s*Plan/ });
+    await first.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(chips(page).getByRole("button", { name: /02\s*Design/ })).toBeFocused();
   });
 
-  test("the plan frame is drawn in, group by group, when phase 1 is active", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/en");
-    await chips(page).scrollIntoViewIfNeeded();
+  test("only one caption element exists in the frame", async ({ page }) => {
+    await openDesktop(page);
+    await expect(stage(page).getByTestId("wwd-caption")).toHaveCount(1);
     await chips(page)
-      .getByRole("button", { name: /01\s*Plan/ })
+      .getByRole("button", { name: /02\s*Design/ })
       .click();
-    const walls = page.locator("svg.wwd-plan #walls path").first();
-    await expect(walls).toHaveCSS("stroke-dashoffset", "0px", { timeout: 4_000 });
-    await expect(page.locator("svg.wwd-plan #dims")).toHaveCSS("opacity", "1", { timeout: 4_000 });
+    await expect(stage(page).getByTestId("wwd-caption")).toHaveCount(1);
+    await expect(stage(page).getByTestId("wwd-caption")).toHaveText("Design · Massing model");
   });
 
-  test("phones: no pinned frame; every phase shows its own frame under its text", async ({
+  test("the frame is sticky on desktop", async ({ page }) => {
+    await openDesktop(page);
+    await expect(stage(page).locator("xpath=..")).toHaveCSS("position", "sticky");
+  });
+
+  test("axe passes on the section", async ({ page }) => {
+    await openDesktop(page);
+    await page.waitForTimeout(800);
+    const results = await new AxeBuilder({ page })
+      .include("section[aria-labelledby='what-heading']")
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(results.violations.map((v) => v.id)).toEqual([]);
+  });
+
+  test("screenshot at 1440×900", async ({ page }) => {
+    await openDesktop(page);
+    await chips(page)
+      .getByRole("button", { name: /02\s*Design/ })
+      .click();
+    await expect(stage(page)).toHaveAttribute("data-active", "1");
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: "test-results/what-we-do-1440x900.png" });
+  });
+
+  test("phones: no pinned frame; every phase shows its own image under its text", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -48,15 +114,19 @@ test.describe("what we do: real-image sequence", () => {
     const items = page.locator("#what-heading").locator("xpath=ancestor::section//ol/li");
     await expect(items).toHaveCount(4);
     for (let i = 0; i < 4; i++) {
-      await expect(items.nth(i).locator("[data-static-frame]")).toHaveCount(1);
+      const img = items.nth(i).locator("[data-static-frame] img");
+      await expect(img).toHaveCount(1);
+      const src = decodeURIComponent((await img.getAttribute("src")) ?? "");
+      expect(src + (await img.getAttribute("srcset"))).toContain("-800.jpg");
     }
+    await expect(page.getByTestId("wwd-stage")).toHaveCount(0);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+    await items.first().scrollIntoViewIfNeeded();
+    await page.screenshot({ path: "test-results/what-we-do-390x844.png" });
   });
 
-  test("reduced motion: all four frames stacked, one under each phase, nothing pinned", async ({
-    browser,
-  }) => {
+  test("reduced motion: images inline under each phase, nothing sticky", async ({ browser }) => {
     const context = await browser.newContext({
       reducedMotion: "reduce",
       viewport: { width: 1440, height: 900 },
@@ -66,9 +136,9 @@ test.describe("what we do: real-image sequence", () => {
     const items = page.locator("#what-heading").locator("xpath=ancestor::section//ol/li");
     await expect(items).toHaveCount(4);
     for (let i = 0; i < 4; i++) {
-      await expect(items.nth(i).locator("[data-static-frame]")).toBeVisible();
+      await expect(items.nth(i).locator("[data-static-frame]")).toHaveCount(1);
     }
-    await expect(chips(page).locator("xpath=..")).toHaveCSS("position", "static");
+    await expect(page.getByTestId("wwd-stage")).toHaveCount(0);
     await context.close();
   });
 });

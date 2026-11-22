@@ -84,7 +84,7 @@ Source of truth: `src/content/hero.ts`; code in `src/components/sections/hero/`.
 
 ## What we do sequence (v0.4.0)
 
-`WhatWeDo.tsx` (chips, phases, pinning) and `WhatWeDoStage.tsx` (the four frames). Data: `content/what-we-do.ts`; the plan drawing is inlined from `public/what-we-do/plan.svg` as `content/plan-markup.ts`.
+`WhatWeDo.tsx` (chips, phases, pinning) and `WhatWeDoStage.tsx` (the stacked frame). Data: `content/process.ts`; scroll progress maps to a phase in `lib/process-phase.ts`.
 
 - A 4:3 frame is pinned with CSS `position: sticky` while the phases scroll; an IntersectionObserver sets the active phase and the chips mirror it (`aria-current="step"`; clicking a chip scrolls to the phase with Lenis).
 - Each frame animates with CSS transitions toggled by classes: plan (stroke-dash draw of walls, openings and glazing; fades for grid, columns and dimensions), design (clip-path wipe plus slow zoom), engineer (image dims to 55% and an orange dashed grid draws), build (cross-fade and a sliding badge). Frames covered by a later one are hidden after the cross-fade.

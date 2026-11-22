@@ -552,6 +552,8 @@ test.describe("home page content", () => {
 
   test("the phase chips scroll to and highlight their phase", async ({ page }) => {
     await page.goto("/en");
+    // The chips move into the pinned column once the section has hydrated at desktop width.
+    await expect(page.getByTestId("wwd-stage")).toBeAttached();
     const chips = page.getByRole("navigation", { name: "Project phases" });
     await chips.scrollIntoViewIfNeeded();
     await chips.getByRole("button", { name: /03 Engineer/ }).click();
