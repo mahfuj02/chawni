@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { TeamCard, TeamNameList } from "@/components/sections/TeamCard";
+import { TeamCard } from "@/components/sections/TeamCard";
 import { PageHero } from "@/components/sections/PageHero";
 import { Container, Photo, Reveal, SectionLabel } from "@/components/ui";
 import { company } from "@/content";
@@ -24,6 +24,9 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   const tn = await getTranslations("nav");
   const tc = await getTranslations("common");
   const team = await getContentSource().getTeam();
+  const tt = await getTranslations("team");
+  const founders = team.filter((m) => m.title === "Co-founder");
+  const others = team.filter((m) => m.title !== "Co-founder");
 
   const registrations = [
     { label: t("tradeLicence"), value: company.registrations.tradeLicence },
@@ -95,18 +98,26 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
               {t("leadershipTitle")}
             </h2>
           </div>
-          <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {team
-              .filter((m) => m.photo)
-              .map((m, i) => (
-                <li key={m.slug}>
-                  <Reveal delay={(i % 3) * 100}>
-                    <TeamCard member={m} />
-                  </Reveal>
-                </li>
-              ))}
+          <h3 className="mb-6 text-h3">{tt("foundersTitle")}</h3>
+          <ul className="grid max-w-4xl gap-x-6 gap-y-12 sm:grid-cols-2">
+            {founders.map((m, i) => (
+              <li key={m.slug}>
+                <Reveal delay={i * 100}>
+                  <TeamCard member={m} large />
+                </Reveal>
+              </li>
+            ))}
           </ul>
-          <TeamNameList members={team.filter((m) => !m.photo)} />
+          <h3 className="mt-16 mb-6 text-h3">{tt("membersTitle")}</h3>
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
+            {others.map((m, i) => (
+              <li key={m.slug}>
+                <Reveal delay={(i % 5) * 100}>
+                  <TeamCard member={m} />
+                </Reveal>
+              </li>
+            ))}
+          </ul>
         </Container>
       </section>
 
