@@ -142,3 +142,52 @@ test.describe("what we do: four-stage sequence", () => {
     await context.close();
   });
 });
+
+const PAIRS = [
+  { chip: /01\s*Plan/, file: "plan.jpg", caption: "Plan · Elevation drawing" },
+  { chip: /02\s*Design/, file: "design.jpg", caption: "Design · Massing model" },
+  { chip: /03\s*Engineer/, file: "engineer.jpg", caption: "Engineer · Structural frame" },
+  { chip: /04\s*Build/, file: "build.jpg", caption: "Build · Hotel Paradise Inn" },
+];
+
+test.describe("what we do: image/caption pairs", () => {
+  test("every chip shows its own image and caption", async ({ page }) => {
+    await openDesktop(page);
+    // Visit out of order so both the forward wipe and the backward fade are exercised.
+    for (const i of [0, 1, 2, 3, 1, 3, 0]) {
+      const { chip, file, caption } = PAIRS[i];
+      await chips(page).getByRole("button", { name: chip }).click();
+      await expect(stage(page)).toHaveAttribute("data-active", String(i));
+      await expect(page.getByTestId("wwd-caption")).toHaveText(caption);
+      const layer = stage(page).locator(`[data-testid="wwd-layer"][data-phase="${i}"]`);
+      await expect(layer).toHaveCSS("opacity", "1");
+      const src = await layer.locator("img").getAttribute("src");
+      expect(decodeURIComponent(src ?? "")).toContain(file);
+    }
+  });
+
+  test("every scroll position shows its own image and caption", async ({ page }) => {
+    await openDesktop(page);
+    for (const i of [0, 1, 2, 3]) {
+      const { file, caption } = PAIRS[i];
+      await page
+        .locator(`ol > li[data-phase="${i}"]`)
+        .evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+      await expect(stage(page)).toHaveAttribute("data-active", String(i));
+      await expect(page.getByTestId("wwd-caption")).toHaveText(caption);
+      const src = await stage(page)
+        .locator(`[data-testid="wwd-layer"][data-phase="${i}"] img`)
+        .getAttribute("src");
+      expect(decodeURIComponent(src ?? "")).toContain(file);
+    }
+  });
+
+  test("no leftover old frames", async ({ page }) => {
+    await openDesktop(page);
+    const html = await page.locator("section[aria-labelledby='what-heading']").innerHTML();
+    for (const old of ["plan.svg", "samriddhi-01", "dr-arafat-palace-01", "windsor-hotel-01"]) {
+      expect(html).not.toContain(old);
+    }
+    await expect(page.getByText("Concept floor plan")).toHaveCount(0);
+  });
+});
