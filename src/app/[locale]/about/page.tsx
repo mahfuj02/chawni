@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { TeamCard } from "@/components/sections/TeamCard";
+import { TeamGrid } from "@/components/sections/TeamCard";
 import { PageHero } from "@/components/sections/PageHero";
 import { Container, Photo, Reveal, SectionLabel } from "@/components/ui";
 import { company } from "@/content";
@@ -24,9 +24,6 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
   const tn = await getTranslations("nav");
   const tc = await getTranslations("common");
   const team = await getContentSource().getTeam();
-  const tt = await getTranslations("team");
-  const founders = team.filter((m) => m.title === "Co-founder");
-  const others = team.filter((m) => m.title !== "Co-founder");
 
   const registrations = [
     { label: t("tradeLicence"), value: company.registrations.tradeLicence },
@@ -92,32 +89,10 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
 
       <section id="leadership" aria-labelledby="leadership-heading" className="section-y">
         <Container>
-          <div className="mb-12 flex max-w-3xl flex-col gap-6">
-            <SectionLabel>{t("leadershipLabel")}</SectionLabel>
-            <h2 id="leadership-heading" className="text-h2">
-              {t("leadershipTitle")}
-            </h2>
-          </div>
-          <h3 className="mb-6 text-h3">{tt("foundersTitle")}</h3>
-          <ul className="grid max-w-4xl gap-x-6 gap-y-12 sm:grid-cols-2">
-            {founders.map((m, i) => (
-              <li key={m.slug}>
-                <Reveal delay={i * 100}>
-                  <TeamCard member={m} large />
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-          <h3 className="mt-16 mb-6 text-h3">{tt("membersTitle")}</h3>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
-            {others.map((m, i) => (
-              <li key={m.slug}>
-                <Reveal delay={(i % 5) * 100}>
-                  <TeamCard member={m} />
-                </Reveal>
-              </li>
-            ))}
-          </ul>
+          <h2 id="leadership-heading" className="mb-12 max-w-3xl text-h2">
+            {t("leadershipTitle")}
+          </h2>
+          <TeamGrid members={team} label={t("leadershipLabel")} />
         </Container>
       </section>
 

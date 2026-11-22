@@ -142,11 +142,15 @@ describe("team data", () => {
   });
 
   it("has the right titles and roles", () => {
-    const by = Object.fromEntries(team.map((m) => [m.slug, m]));
-    expect(by["mahfuj-ahmed"].title).toBe("Head of Digital");
-    expect(by["mahfuj-ahmed"].role).toBe("Website, technology & client relations");
-    expect(by["jahid-hasan"].role).toBe("Graphic Designer");
-    expect(by["tofayel-ahmed"].role).toBe("Marketing Specialist");
+    expect(team.map((m) => [m.title, m.role])).toEqual([
+      ["Co-founder", "Architecture"],
+      ["Co-founder", "Civil Engineer"],
+      ["Head of Digital", "Technology & client relations"],
+      [undefined, "Brand & Visual Designer"],
+      [undefined, "Civil Engineer"],
+      [undefined, "Architecture"],
+      [undefined, "Marketing Specialist"],
+    ]);
   });
 
   it("uses the black-and-white portrait, and five members have photos", () => {

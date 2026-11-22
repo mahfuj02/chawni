@@ -90,11 +90,12 @@
     "seeAll": "দলের সঙ্গে পরিচিত হোন",
     "coFounder": "সহ-প্রতিষ্ঠাতা",
     "headOfDigital": "ডিজিটাল প্রধান",
+    "architecture": "স্থাপত্য",
+    "civilEngineer": "সিভিল ইঞ্জিনিয়ার",
+    "techClient": "প্রযুক্তি ও ক্লায়েন্ট সম্পর্ক",
+    "brandVisual": "ব্র্যান্ড ও ভিজ্যুয়াল ডিজাইনার",
     "marketingSpecialist": "মার্কেটিং স্পেশালিস্ট",
-    "graphicDesigner": "গ্রাফিক ডিজাইনার",
     "photoSoon": "ছবি শীঘ্রই আসছে",
-    "foundersTitle": "প্রতিষ্ঠাতা",
-    "membersTitle": "দল",
     "alsoTitle": "দলের আরও সদস্য"
   },
   "trusted": {
