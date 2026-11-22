@@ -123,21 +123,41 @@ describe("projects data integrity", () => {
 });
 
 describe("team data", () => {
-  it("has the six real members with unique slugs", () => {
-    expect(team).toHaveLength(6);
-    expect(new Set(team.map((m) => m.slug)).size).toBe(6);
-  });
-
-  it("has two co-founders", () => {
-    expect(team.filter((m) => m.title === "Co-founder").map((m) => m.name)).toEqual([
-      "Engr. Masum Parvez",
+  it("has the seven real members in the agreed order, with unique slugs", () => {
+    expect(team.map((m) => m.name)).toEqual([
       "Engr. Najir Hridoy",
+      "Engr. Masum Parvez",
+      "Md Mahfuj Ahmed",
+      "Jahid Hasan",
+      "Engr. Shitol Ahmed",
+      "Engr. Mahjan Prova",
+      "Tofayel Ahmed",
     ]);
+    expect(new Set(team.map((m) => m.slug)).size).toBe(7);
   });
 
-  it("uses the black-and-white portrait, and four members have photos", () => {
+  it("has two co-founders, first", () => {
+    expect(team.slice(0, 2).map((m) => m.title)).toEqual(["Co-founder", "Co-founder"]);
+    expect(team.filter((m) => m.title === "Co-founder")).toHaveLength(2);
+  });
+
+  it("has the right titles and roles", () => {
+    const by = Object.fromEntries(team.map((m) => [m.slug, m]));
+    expect(by["mahfuj-ahmed"].title).toBe("Head of Digital");
+    expect(by["mahfuj-ahmed"].role).toBe("Website, technology & client relations");
+    expect(by["jahid-hasan"].role).toBe("Graphic Designer");
+    expect(by["tofayel-ahmed"].role).toBe("Marketing Specialist");
+  });
+
+  it("uses the black-and-white portrait, and five members have photos", () => {
     const withPhoto = team.filter((m) => m.photo);
-    expect(withPhoto).toHaveLength(4);
+    expect(withPhoto.map((m) => m.slug)).toEqual([
+      "najir-hridoy",
+      "masum-parvez",
+      "mahfuj-ahmed",
+      "jahid-hasan",
+      "tofayel-ahmed",
+    ]);
     for (const m of withPhoto) {
       expect(m.photo).toMatch(/-bw\.jpg$/);
       expect(fs.existsSync(publicFile(m.photo!))).toBe(true);
@@ -153,7 +173,7 @@ describe("team data", () => {
 describe("derived stats", () => {
   it("match the data", () => {
     const byKey = Object.fromEntries(stats.map((s) => [s.key, s.value]));
-    expect(byKey).toEqual({ projects: 25, sectors: 5, models: 12, team: 6 });
+    expect(byKey).toEqual({ projects: 25, sectors: 5, models: 12, team: 7 });
   });
 });
 
@@ -194,8 +214,8 @@ describe("ContentSource (local implementation)", () => {
 
   it("returns the team with a blur placeholder for portraits", async () => {
     const members = await content.getTeam();
-    expect(members).toHaveLength(6);
-    expect(members.filter((m) => m.photoBlur)).toHaveLength(4);
+    expect(members).toHaveLength(7);
+    expect(members.filter((m) => m.photoBlur)).toHaveLength(5);
   });
 
   it("has no testimonials until real ones exist, and six client wordmarks", async () => {

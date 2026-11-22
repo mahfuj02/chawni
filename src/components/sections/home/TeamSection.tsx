@@ -34,7 +34,7 @@ export function TeamSection({
             ))}
           </ul>
         </div>
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {members.map((m, i) => (
             <li key={m.slug}>
               <Reveal delay={i * 100}>

@@ -1,53 +1,71 @@
 import { useTranslations } from "next-intl";
 import { LazyPhoto } from "@/components/ui/LazyPhoto";
 import type { TeamMemberCardData } from "@/content/types";
+import { cn } from "@/lib/utils";
 
-/** Black-and-white portrait at 4:5. Only members who have a photo get a card (see TeamNameList). */
-export function TeamCard({ member }: { member: TeamMemberCardData }) {
+/** Black-and-white portrait at 4:5, or an initials tile with "Photo coming soon" when there is no photo yet. */
+export function TeamCard({
+  member,
+  large = false,
+}: {
+  member: TeamMemberCardData;
+  /** Founders row: bigger name. */
+  large?: boolean;
+}) {
   const t = useTranslations("team");
+  /** English titles and roles that have a Bangla translation in messages. */
+  const label = (s: string) => {
+    switch (s) {
+      case "Co-founder":
+        return t("coFounder");
+      case "Head of Digital":
+        return t("headOfDigital");
+      case "Marketing Specialist":
+        return t("marketingSpecialist");
+      case "Graphic Designer":
+        return t("graphicDesigner");
+      default:
+        return s;
+    }
+  };
   const showRole = member.role && !member.role.includes("TBC");
 
   return (
     <article className="flex flex-col gap-4">
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-card bg-mist">
-        <LazyPhoto
-          src={member.photo ?? ""}
-          alt={member.name}
-          aspect="4/5"
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
-          blur={member.photoBlur}
-          className="absolute inset-0 h-full"
-          imageClassName="grayscale"
-        />
+        {member.photo ? (
+          <LazyPhoto
+            src={member.photo}
+            alt={member.name}
+            aspect="4/5"
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+            blur={member.photoBlur}
+            className="absolute inset-0 h-full"
+            imageClassName="grayscale"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 border border-line bg-white">
+            <span
+              aria-hidden="true"
+              className="font-heading text-[clamp(2.5rem,1.5rem+3vw,4rem)] font-semibold text-muted"
+            >
+              {member.initials}
+            </span>
+            <span className="text-small text-muted">{t("photoSoon")}</span>
+          </div>
+        )}
       </div>
       <div>
         {member.title && (
           <p className="mb-1 text-label font-medium tracking-wide text-orange-text uppercase">
-            {member.title === "Co-founder" ? t("coFounder") : member.title}
+            {label(member.title)}
           </p>
         )}
-        <h3 className="text-h3">{member.name}</h3>
-        {showRole && <p className="mt-1 text-muted">{member.role}</p>}
+        <h3 className={large ? "text-h2" : "text-h3"}>{member.name}</h3>
+        {showRole && (
+          <p className={cn("mt-1 text-muted", !large && "text-small")}>{label(member.role)}</p>
+        )}
       </div>
     </article>
-  );
-}
-
-/** Team members who do not have a portrait yet: names and roles only, no placeholder tile. */
-export function TeamNameList({ members }: { members: TeamMemberCardData[] }) {
-  const t = useTranslations("team");
-  if (members.length === 0) return null;
-  return (
-    <div className="mt-16 border-t border-line pt-8">
-      <h3 className="text-h3">{t("alsoTitle")}</h3>
-      <ul className="mt-5 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
-        {members.map((m) => (
-          <li key={m.slug}>
-            <span className="font-medium">{m.name}</span>
-            {m.role && !m.role.includes("TBC") && <span className="text-muted"> · {m.role}</span>}
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }

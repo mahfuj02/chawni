@@ -8,6 +8,7 @@ const config = {
         "feat",
         "fix",
         "chore",
+        "content",
         "docs",
         "style",
         "refactor",

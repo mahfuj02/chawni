@@ -289,33 +289,47 @@ test.describe("project detail", () => {
 });
 
 test.describe("about and team", () => {
-  test("About shows four portrait cards (black and white, 4:5) and lists the two members without a photo by name", async ({
+  test("About shows seven cards: two founders first, then five in the team grid", async ({
     page,
   }) => {
     await page.goto("/en/about");
     const members = page.locator("#leadership article");
     // Portraits load lazily, so bring the grid into view first.
     await members.last().scrollIntoViewIfNeeded();
-    await expect(members).toHaveCount(4);
+    await expect(members).toHaveCount(7);
     await expect(members.getByText("Co-founder")).toHaveCount(2);
-    await expect(members.locator("img")).toHaveCount(4);
-    await expect(members.first().locator("img")).toHaveCSS("filter", "grayscale(1)");
-    // No placeholder tiles; members without a photo are listed by name.
-    await expect(page.getByText(/coming soon/i)).toHaveCount(0);
-    const also = page.locator("#leadership").getByRole("heading", { name: "Also on the team" });
-    await expect(also).toBeVisible();
+    await expect(members.nth(0).getByRole("heading", { name: "Engr. Najir Hridoy" })).toBeVisible();
+    await expect(members.nth(1).getByRole("heading", { name: "Engr. Masum Parvez" })).toBeVisible();
+    await expect(members.nth(2).getByRole("heading", { name: "Md Mahfuj Ahmed" })).toBeVisible();
+    await expect(members.nth(2).getByText("Head of Digital")).toBeVisible();
+    // The first row is the two founders, the second row the other five.
     await expect(
-      page
-        .locator("#leadership li")
-        .filter({ hasText: "·" })
-        .or(page.locator("#leadership ul").last().locator("li")),
-    ).not.toHaveCount(0);
+      page.locator("#leadership").getByRole("heading", { name: "Founders" }),
+    ).toBeVisible();
+    await expect(
+      page.locator("#leadership").getByRole("heading", { name: "Team", exact: true }),
+    ).toBeVisible();
+    await expect(page.locator("#leadership ul").first().locator("article")).toHaveCount(2);
+    await expect(page.locator("#leadership ul").nth(1).locator("article")).toHaveCount(5);
+    // Five portraits (black and white), two initials tiles.
+    await expect(members.locator("img")).toHaveCount(5);
+    await expect(members.first().locator("img")).toHaveCSS("filter", "grayscale(1)");
+    await expect(members.getByText("Photo coming soon")).toHaveCount(2);
   });
 
-  test("Home shows the four members who have photos", async ({ page }) => {
+  test("Home shows the first four members in team order", async ({ page }) => {
     await page.goto("/en");
     const section = page.locator('section[aria-labelledby="team-heading"]');
-    await expect(section.locator("article")).toHaveCount(4);
+    const cards = section.locator("article");
+    await expect(cards).toHaveCount(4);
+    for (const [i, name] of [
+      "Najir Hridoy",
+      "Masum Parvez",
+      "Mahfuj Ahmed",
+      "Jahid Hasan",
+    ].entries()) {
+      await expect(cards.nth(i)).toContainText(name);
+    }
     await expect(section.getByText("Photo coming soon")).toHaveCount(0);
   });
 

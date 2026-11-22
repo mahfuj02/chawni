@@ -1,7 +1,17 @@
 // REAL TEAM DATA — photos in public/team (the site uses the black-and-white *-bw.jpg).
+// Order matters: About and Home show members in this order.
 import type { TeamMember } from "./types";
 
 export const team: TeamMember[] = [
+  {
+    slug: "najir-hridoy",
+    name: "Engr. Najir Hridoy",
+    title: "Co-founder",
+    role: "Architecture",
+    photo: "/team/najir-hridoy-bw.jpg",
+    photoColor: "/team/najir-hridoy.jpg",
+    initials: "NH",
+  },
   {
     slug: "masum-parvez",
     name: "Engr. Masum Parvez",
@@ -12,16 +22,14 @@ export const team: TeamMember[] = [
     initials: "MP",
   },
   {
-    slug: "najir-hridoy",
-    name: "Engr. Najir Hridoy",
-    title: "Co-founder",
-    role: "Architecture",
-    photo: "/team/najir-hridoy-bw.jpg",
-    photoColor: "/team/najir-hridoy.jpg",
-    initials: "NH",
+    slug: "mahfuj-ahmed",
+    name: "Md Mahfuj Ahmed",
+    title: "Head of Digital",
+    role: "Website, technology & client relations",
+    photo: "/team/mahfuj-ahmed-bw.jpg",
+    photoColor: "/team/mahfuj-ahmed.jpg",
+    initials: "MA",
   },
-  { slug: "mahjan-prova", name: "Engr. Mahjan Prova", role: "Architecture", initials: "MP" },
-  { slug: "shitol-ahmed", name: "Engr. Shitol Ahmed", role: "[Role TBC]", initials: "SA" },
   {
     slug: "jahid-hasan",
     name: "Jahid Hasan",
@@ -30,12 +38,14 @@ export const team: TeamMember[] = [
     photoColor: "/team/jahid-hasan.jpg",
     initials: "JH",
   },
+  { slug: "shitol-ahmed", name: "Engr. Shitol Ahmed", role: "[Role TBC]", initials: "SA" },
+  { slug: "mahjan-prova", name: "Engr. Mahjan Prova", role: "Architecture", initials: "MP" },
   {
-    slug: "mahfuj-ahmed",
-    name: "Md Mahfuj Ahmed",
-    role: "Information Technology",
-    photo: "/team/mahfuj-ahmed-bw.jpg",
-    photoColor: "/team/mahfuj-ahmed.jpg",
-    initials: "MA",
+    slug: "tofayel-ahmed",
+    name: "Tofayel Ahmed",
+    role: "Marketing Specialist",
+    photo: "/team/tofayel-ahmed-bw.jpg",
+    photoColor: "/team/tofayel-ahmed.jpg",
+    initials: "TA",
   },
 ];
