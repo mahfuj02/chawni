@@ -58,18 +58,13 @@ export function TeamCard({ member }: { member: TeamMemberCardData }) {
         )}
       </div>
       <div>
+        {hasTitle && (
+          <p className="mb-1 text-label font-medium tracking-wide text-orange-text uppercase">
+            {label(member.title!)}
+          </p>
+        )}
         <h3 className="font-heading text-[20px] leading-tight font-semibold">{member.name}</h3>
-        <p className="mt-1 text-[14px] text-muted">
-          {hasTitle && (
-            <>
-              <span className="font-medium tracking-wide text-orange-text uppercase">
-                {label(member.title!)}
-              </span>
-              {" · "}
-            </>
-          )}
-          {label(member.role)}
-        </p>
+        <p className="mt-1 text-[14px] text-muted">{label(member.role)}</p>
       </div>
     </article>
   );
