@@ -1,10 +1,6 @@
-public/projects/**/*.jpg filter=lfs diff=lfs merge=lfs -text
-public/team/*.jpg filter=lfs diff=lfs merge=lfs -text
-public/models/*.glb filter=lfs diff=lfs merge=lfs -text
-public/hero/*.jpg filter=lfs diff=lfs merge=lfs -text
-public/hero/*.png filter=lfs diff=lfs merge=lfs -text
-*.jpg !text !filter !merge !diff
-*.jpeg !text !filter !merge !diff
-*.png !text !filter !merge !diff
-*.webp !text !filter !merge !diff
-*.glb !text !filter !merge !diff
+# Media is stored in git directly (Git LFS is not used: its objects were never on the server).
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.glb binary
